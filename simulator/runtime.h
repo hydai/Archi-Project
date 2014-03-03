@@ -9,7 +9,8 @@ All rights reserved.
 
 #include "const.h"
 #include "instruction.h"
+#include "parse.h"
+#include "execution.h"
 
 instruction parseInstr(WORD_32bit instr);
-
 #endif
