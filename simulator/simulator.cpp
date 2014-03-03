@@ -34,21 +34,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
-#define MEMORY_SIZE (256)
-#define WORD_32bit (unsigned int)
+
+#define MEMORY_SIZE 256
+#define REGISTER_SIZE 32
+#define WORD_32bit unsigned int
+
+#define sp 29
+
+WORD_32bit reg[REGISTER_SIZE];
 WORD_32bit imemory[MEMORY_SIZE];
 WORD_32bit dmemory[MEMORY_SIZE];
 WORD_32bit cycle_counter;
-WORD_32bit cycle_number;
 WORD_32bit pc;
 
 void init();
 void load_basic_setting(FILE *iimage);
-void load_imemory(FILE *iimage, WORD_32bit cycle_number);
+void load_imemory(FILE *iimage);
 void load_dmemory(FILE *dimage);
 WORD_32bit transformInitialPCtoSimulatorPC(WORD_32bit initPC);
 WORD_32bit printPC(WORD_32bit simuPC);
+void memory_dump(FILE *snapshot);
+
 int main(int argc, char *argv[])
 {
     /* Declare file pointers and memory part. */
@@ -62,9 +70,12 @@ int main(int argc, char *argv[])
     init();
     load_basic_setting(iimage);
     pc = transformInitialPCtoSimulatorPC(pc);
-    load_imemory(iimage, cycle_number);
+    load_imemory(iimage);
     load_dmemory(dimage);
     
+    /* print data */
+    memory_dump(snapshot);
+
     /* Close file pointers and exit simulator */
     fclose(iimage);
     fclose(dimage);
@@ -82,7 +93,6 @@ void init() {
     memset(imemory, 0, sizeof(imemory));
     memset(dmemory, 0, sizeof(dmemory));
     cycle_counter = 0;
-    cycle_number = 0;
     pc = 0;
 }
 WORD_32bit transformInitialPCtoSimulatorPC(WORD_32bit initPC) {
@@ -96,11 +106,28 @@ WORD_32bit printPC(WORD_32bit simuPC) {
  */
 void load_basic_setting(FILE *iimage) {
     fread(&pc, sizeof(WORD_32bit), 1, iimage);
-    fread(&cycle_number, sizeof(WORD_32bit), 1, iimage);
 }
-void load_imemory(FILE *iimage, WORD_32bit cycle_number) {
+void load_imemory(FILE *iimage) {
+    WORD_32bit cycle_number;
+    fread(&cycle_number, sizeof(WORD_32bit), 1, iimage);
     for (int i = 0; i < cycle_number; i++) {
-        fread(&(imemory+pc+i), sizeof(WORD_32bit), 1, iimage);
+        fread((imemory+pc+i), sizeof(WORD_32bit), 1, iimage);
     }
 }
-void load_dmemory(FILE *dimage);
+void load_dmemory(FILE *dimage) {
+    WORD_32bit dimage_word_num;
+    /* read $sp from dimage */
+    fread(&(reg[sp]), sizeof(WORD_32bit), 1, dimage);
+    fread(&dimage_word_num, sizeof(WORD_32bit), 1, dimage);
+    for (int i = 0; i < dimage_word_num; i++) {
+        fread((dmemory+i), sizeof(WORD_32bit), 1, dimage);
+    }
+}
+void memory_dump(FILE *snapshot) {
+    fprintf(snapshot, "cycle %u\n", cycle_counter);
+    for (int i = 0; i < REGISTER_SIZE; i++) {
+        fprintf(snapshot, "$%02d: 0x%08X\n", i, reg[i]);
+    }
+    fprintf(snapshot, "PC: 0x%08X\n", printPC(pc));
+    fprintf(snapshot, "\n\n");
+}

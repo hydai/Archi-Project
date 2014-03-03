@@ -1,10 +1,11 @@
 SIMULATOR = simulator
+TARGET = single_cycle
 SOURCE = simulator.cpp
-CC = g++
-CFLAGS = -Wall
+CC = clang++
+CFLAGS = -Wall 
 
 $(SIMULATOR):
-	$(CC) $(SOURCE) $(CFLAGS) -o $(SIMULATOR)
+	$(CC) $(SOURCE) $(CFLAGS) -o $(TARGET)
 
 
 .PHONY: clean
