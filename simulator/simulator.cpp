@@ -43,12 +43,12 @@ int main(int argc, char *argv[])
         instruction tmpInstr = parseInstr(currentInstr);
         WORD_32bit runtimeStatus = executeInstr(tmpInstr);
         
-        /* print data */
-        memory_dump(snapshot);
-
         if (runtimeStatus == status_halt) {
             break;
         }
+
+        /* print data */
+        memory_dump(snapshot);
     }
     /* Close file pointers and exit simulator */
     fclose(iimage);
