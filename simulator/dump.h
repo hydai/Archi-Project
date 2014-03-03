@@ -6,6 +6,11 @@ All rights reserved.
 
 #ifndef DUMP_H
 #define DUMP_H
+#include "const.h"
+#include "environment.h"
+#include <cstdio>
+
+
 
 WORD_32bit printPC(WORD_32bit simuPC);
 void memory_dump(FILE *snapshot);

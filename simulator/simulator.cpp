@@ -11,6 +11,7 @@ All rights reserved.
 #include <cstdlib>
 #include <cstring>
 #include "const.h"
+#include "runtime.h"
 #include "environment.h"
 #include "dump.h"
 
@@ -30,14 +31,16 @@ int main(int argc, char *argv[])
     pc = transformInitialPCtoSimulatorPC(pc);
     load_imemory(iimage);
     load_dmemory(dimage);
-    
+#ifndef DEBUG 
     while (1) {
         /* print data */
         memory_dump(snapshot);
         /* increase pc */
         pc = pc+1;
     }
-
+#else
+    memory_dump(snapshot);
+#endif
     /* Close file pointers and exit simulator */
     fclose(iimage);
     fclose(dimage);

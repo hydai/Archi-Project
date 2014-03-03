@@ -1,5 +1,6 @@
 #include "dump.h"
 
+
 void memory_dump(FILE *snapshot) {
     fprintf(snapshot, "cycle %u\n", cycle_counter);
     for (int i = 0; i < REGISTER_SIZE; i++) {

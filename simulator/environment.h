@@ -3,16 +3,19 @@ Simulator, NTHU, CS, Archi, Project1
 Copyright (C) 2014 Hung-Ying, Dai
 All rights reserved.
 */
-#include "const.h"
+
 
 #ifndef ENVIRONMENT_H
-#define ENVIRONMENT
+#define ENVIRONMENT_H
 
-WORD_32bit reg[REGISTER_SIZE];
-WORD_32bit imemory[MEMORY_SIZE];
-WORD_32bit dmemory[MEMORY_SIZE];
-WORD_32bit cycle_counter;
-WORD_32bit pc;
+#include "const.h"
+#include <cstdio>
+
+extern WORD_32bit reg[REGISTER_SIZE];
+extern WORD_32bit imemory[MEMORY_SIZE];
+extern WORD_32bit dmemory[MEMORY_SIZE];
+extern WORD_32bit cycle_counter;
+extern WORD_32bit pc;
 
 void init();
 void load_basic_setting(FILE *iimage);

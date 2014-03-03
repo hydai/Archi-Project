@@ -1,4 +1,11 @@
 #include "environment.h"
+#include <cstring>
+
+WORD_32bit reg[REGISTER_SIZE];
+WORD_32bit imemory[MEMORY_SIZE];
+WORD_32bit dmemory[MEMORY_SIZE];
+WORD_32bit cycle_counter;
+WORD_32bit pc;
 
 /*
  * Initial the simulator.

@@ -1,8 +1,8 @@
 SIMULATOR = simulator
 TARGET = single_cycle
-SOURCE = simulator.cpp
+SOURCE = simulator.cpp environment.cpp runtime.cpp dump.cpp
 CC = clang++
-CFLAGS = -Wall 
+CFLAGS = -Wall -DDEBUG
 
 $(SIMULATOR):
 	$(CC) $(SOURCE) $(CFLAGS) -o $(TARGET)
