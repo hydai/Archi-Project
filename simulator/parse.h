@@ -14,7 +14,10 @@ instruction parseOpSType(WORD_32bit instr);
 WORD_32bit getOpcode(WORD_32bit instr);
 WORD_32bit getRs(WORD_32bit instr);
 WORD_32bit getRt(WORD_32bit instr);
+WORD_32bit getRd(WORD_32bit instr);
 WORD_32bit getCi(WORD_32bit instr);
+WORD_32bit getCs(WORD_32bit instr);
 WORD_32bit getCa(WORD_32bit instr);
+WORD_32bit getFunct(WORD_32bit instr);
 
 #endif
