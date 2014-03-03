@@ -13,4 +13,5 @@ All rights reserved.
 #include "execution.h"
 
 instruction parseInstr(WORD_32bit instr);
+WORD_32bit executeInstr(instruction tmpInstr);
 #endif

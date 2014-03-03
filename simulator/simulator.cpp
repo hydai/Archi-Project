@@ -31,16 +31,25 @@ int main(int argc, char *argv[])
     pc = transformInitialPCtoSimulatorPC(pc);
     load_imemory(iimage);
     load_dmemory(dimage);
-#ifndef DEBUG 
+    /* print initial data */
+    memory_dump(snapshot);
     while (1) {
-        /* print data */
-        memory_dump(snapshot);
+        /* get current instruction */
+        WORD_32bit currentInstr = imemory[pc];
         /* increase pc */
         pc = pc+1;
+
+        /* run the instruction */
+        instruction tmpInstr = parseInstr(currentInstr);
+        WORD_32bit runtimeStatus = executeInstr(tmpInstr);
+        
+        /* print data */
+        memory_dump(snapshot);
+
+        if (runtimeStatus == status_halt) {
+            break;
+        }
     }
-#else
-    memory_dump(snapshot);
-#endif
     /* Close file pointers and exit simulator */
     fclose(iimage);
     fclose(dimage);
