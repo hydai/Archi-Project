@@ -2,31 +2,6 @@
 Simulator, NTHU, CS, Archi, Project1
 Copyright (C) 2014 Hung-Ying, Dai
 All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-1. Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this software
-must display the following acknowledgement:
-This product includes software developed by the organization.
-4. Neither the name of the organization nor the
-names of its contributors may be used to endorse or promote products
-derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY Hung-Ying, Dai ''AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL Hung-Ying, Dai BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /*
@@ -35,27 +10,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include "const.h"
+#include "environment.h"
+#include "dump.h"
 
-
-#define MEMORY_SIZE 256
-#define REGISTER_SIZE 32
-#define WORD_32bit unsigned int
-
-#define sp 29
-
-WORD_32bit reg[REGISTER_SIZE];
-WORD_32bit imemory[MEMORY_SIZE];
-WORD_32bit dmemory[MEMORY_SIZE];
-WORD_32bit cycle_counter;
-WORD_32bit pc;
-
-void init();
-void load_basic_setting(FILE *iimage);
-void load_imemory(FILE *iimage);
-void load_dmemory(FILE *dimage);
-WORD_32bit transformInitialPCtoSimulatorPC(WORD_32bit initPC);
-WORD_32bit printPC(WORD_32bit simuPC);
-void memory_dump(FILE *snapshot);
 
 int main(int argc, char *argv[])
 {
@@ -73,8 +31,12 @@ int main(int argc, char *argv[])
     load_imemory(iimage);
     load_dmemory(dimage);
     
-    /* print data */
-    memory_dump(snapshot);
+    while (1) {
+        /* print data */
+        memory_dump(snapshot);
+        /* increase pc */
+        pc = pc+1;
+    }
 
     /* Close file pointers and exit simulator */
     fclose(iimage);
@@ -87,7 +49,7 @@ int main(int argc, char *argv[])
 /*
  * Initial the simulator.
  * All memory should be set to zero.
- * PC counter and cycle counter are both set to zero.
+ * PC and cycle counter are both set to zero.
  */
 void init() {
     memset(imemory, 0, sizeof(imemory));
