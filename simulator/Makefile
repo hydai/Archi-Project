@@ -2,7 +2,7 @@ SIMULATOR = simulator
 TARGET = single_cycle
 SOURCE = simulator.cpp environment.cpp runtime.cpp parse.cpp execution.cpp dump.cpp
 CC = clang++
-CFLAGS = -Wall -DDEBUG
+CFLAGS = -Wall 
 
 $(SIMULATOR):
 	$(CC) $(SOURCE) $(CFLAGS) -o $(TARGET)
@@ -10,4 +10,4 @@ $(SIMULATOR):
 
 .PHONY: clean
 clean:
-	rm *.o
+	rm $(TARGET) *.o
