@@ -4,8 +4,8 @@ Copyright (C) 2014 Hung-Ying, Dai
 All rights reserved.
 */
 
-#ifndef DUMP_H
-#define DUMP_H
+#ifndef DUMP_H_
+#define DUMP_H_
 #include "const.h"
 #include "environment.h"
 #include <cstdio>
@@ -15,4 +15,4 @@ All rights reserved.
 WORD_32bit printPC(WORD_32bit simuPC);
 void memory_dump(FILE *snapshot);
 
-#endif
+#endif  // DUMP_H_

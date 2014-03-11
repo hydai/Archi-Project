@@ -4,8 +4,8 @@ Copyright (C) 2014 Hung-Ying, Dai
 All rights reserved.
 */
 
-#ifndef RUNTIME_H
-#define RUNTIME_H
+#ifndef RUNTIME_H_
+#define RUNTIME_H_
 
 #include "const.h"
 #include "instruction.h"
@@ -14,4 +14,4 @@ All rights reserved.
 
 instruction parseInstr(WORD_32bit instr);
 WORD_32bit executeInstr(instruction tmpInstr);
-#endif
+#endif  // RUNTIME_H_

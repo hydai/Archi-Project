@@ -8,8 +8,8 @@ All rights reserved.
  * This is part of simulater. It defined units and constants
  * basically.
  * */
-#ifndef CONST_H
-#define CONST_H
+#ifndef CONST_H_
+#define CONST_H_
 
 /* Define basic unit */
 #define MEMORY_SIZE 256
@@ -55,4 +55,4 @@ All rights reserved.
 #define funct_sra   0x03
 #define funct_jr    0x08
 
-#endif
+#endif  // CONST_H_

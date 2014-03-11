@@ -5,8 +5,8 @@ All rights reserved.
 */
 
 
-#ifndef ENVIRONMENT_H
-#define ENVIRONMENT_H
+#ifndef ENVIRONMENT_H_
+#define ENVIRONMENT_H_
 
 #include "const.h"
 #include <cstdio>
@@ -23,4 +23,4 @@ void load_imemory(FILE *iimage);
 void load_dmemory(FILE *dimage);
 WORD_32bit transformInitialPCtoSimulatorPC(WORD_32bit initPC);
 
-#endif
+#endif  // ENVIRONMENT_H_
