@@ -55,4 +55,6 @@ All rights reserved.
 #define funct_sra   0x03
 #define funct_jr    0x08
 
+/* Mapping the runtime status to hex code*/
+#define status_halt 0x3F
 #endif  // CONST_H_
