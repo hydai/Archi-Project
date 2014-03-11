@@ -1,16 +1,22 @@
-OBJS	= mips-as.o binary.o asm.o
-CFLAGS	= -Wall -O0 -g
+OBJS		= mips-as.o binary.o asm.o
+CFLAGS		= -Wall -O0 -g
 
-all	: mips-as
+all		: mips-as
 
-mips-as	: $(OBJS)
-	$(CC) $(CFLAGS) -o $(.TARGET) $(.ALLSRC)
+mips-as		: $(OBJS)
+	$(CC) $(CFLAGS) -o mips-as $(OBJS)
 
-$(OBJS)	: $(.PREFIX).c
-	$(CC) $(CFLAGS) -c $(.PREFIX).c
+mips-as.o	: mips-as.c
+	$(CC) $(CFLAGS) -c mips-as.c
 
-clean	:
+binary.o	: binary.c
+	$(CC) $(CFLAGS) -c binary.c
+
+asm.o		: asm.c
+	$(CC) $(CFLAGS) -c asm.c
+
+clean		:
 	-rm *.o
 	-rm mips-as
 
-.PHONY	: all clean
+.PHONY		: all clean
