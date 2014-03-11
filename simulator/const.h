@@ -8,8 +8,8 @@ All rights reserved.
  * This is part of simulater. It defined units and constants
  * basically.
  * */
-#ifndef CONST_H_
-#define CONST_H_
+#ifndef CONST_H
+#define CONST_H
 
 /* Define basic unit */
 #define MEMORY_SIZE 256
@@ -57,4 +57,4 @@ All rights reserved.
 
 /* Mapping the runtime status to hex code*/
 #define status_halt 0x3F
-#endif  // CONST_H_
+#endif  // CONST_H
