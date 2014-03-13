@@ -35,9 +35,9 @@ int main(int argc, char *argv[])
     memory_dump(snapshot);
     while (1) {
         /* get current instruction */
-        WORD_32bit currentInstr = imemory[pc];
+        WORD_32bit currentInstr = imemory[transformInitialPCtoSimulatorPC(pc)];
         /* increase pc */
-        pc = pc+1;
+        pc = pc+4;
 
         /* run the instruction */
         instruction tmpInstr = parseInstr(currentInstr);

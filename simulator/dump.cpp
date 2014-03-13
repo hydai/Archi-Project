@@ -11,5 +11,5 @@ void memory_dump(FILE *snapshot) {
 }
 
 WORD_32bit printPC(WORD_32bit simuPC) {
-    return simuPC*4;
+    return simuPC;
 }
