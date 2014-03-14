@@ -25,6 +25,17 @@ WORD_32bit executeOpBne(instruction tmpInstr);
 WORD_32bit executeOpJ(instruction tmpInstr);
 WORD_32bit executeOpJal(instruction tmpInstr);
 WORD_32bit executeOpHalt(instruction tmpInstr);
-WORD_32bit executeOp(instruction tmpInstr);
+WORD_32bit executeFunctAdd(instruction tmpInstr);
+WORD_32bit executeFunctSub(instruction tmpInstr);
+WORD_32bit executeFunctAnd(instruction tmpInstr);
+WORD_32bit executeFunctOr(instruction tmpInstr);
+WORD_32bit executeFunctXor(instruction tmpInstr);
+WORD_32bit executeFunctNor(instruction tmpInstr);
+WORD_32bit executeFunctNand(instruction tmpInstr);
+WORD_32bit executeFunctSlt(instruction tmpInstr);
+WORD_32bit executeFunctSll(instruction tmpInstr);
+WORD_32bit executeFunctSrl(instruction tmpInstr);
+WORD_32bit executeFunctSra(instruction tmpInstr);
+WORD_32bit executeFunctjr(instruction tmpInstr);
 
 #endif

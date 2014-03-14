@@ -116,16 +116,3 @@ WORD_32bit executeInstr(instruction tmpInstr) {
     return runtime_status;
 }
 
-WORD_32bit executeFunct(instruction tmpInstr) {
-    WORD_32bit runtime_status = 0;
-    switch(tmpInstr.funct) {
-        case funct_add:
-            runtime_status = executeFunctAdd(tmpInstr);
-            break;
-        //TODO : funct call
-        default:
-            break;
-    }
-    return runtime_status;
-}
-

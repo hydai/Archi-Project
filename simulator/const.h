@@ -57,4 +57,5 @@ All rights reserved.
 
 /* Mapping the runtime status to hex code*/
 #define status_halt 0x3F
+#define status_success 0x00
 #endif  // CONST_H
