@@ -62,7 +62,7 @@ uint32_t rInst(uint8_t opcode,
   tmp = 0xffffffff;
   tmp &= shamt;
   tmp <<= 6;
-  tmp |= 0xfffffc1f;
+  tmp |= 0xfffff83f;
   buf &= tmp;
 
   tmp = 0xffffffff;
