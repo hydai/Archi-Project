@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   {
     /* Default output file name */
     input = fopen(argv[1], "r");
-    output = fopen("output.bin", "w");
+    output = fopen("output.bin", "wb");
   }
   else if(argc == 3)
   {
