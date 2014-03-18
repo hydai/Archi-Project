@@ -152,6 +152,31 @@ function iinst(opcode, rs, rt, c)
    return buf
 end
 
+-- Return 32-bit integer of a J-Type Instruction
+function jinst(opcode, c)
+   -- Check bounds
+   assert(opcode <= 0x3F)
+   assert(c <= 0x03FFFFFF)
+
+   local tmp = 0xFFFFFFFF
+   local buf = 0xFFFFFFFF
+
+   -- Write into buffer
+   tmp = 0xFFFFFFFF
+   tmp = bit32.band(tmp, opcode)
+   tmp = bit32.lshift(tmp, 26)
+   tmp = bit32.bor(tmp, 0x03FFFFFF)
+   buf = bit32.band(buf, tmp)
+
+   tmp = 0xFFFFFFFF
+   tmp = bit32.band(tmp, c)
+   tmp = bit32.lshift(tmp, 0)
+   tmp = bit32.bor(tmp, 0xFC000000)
+   buf = bit32.band(buf, tmp)
+
+   return buf
+end
+
 -- MIPS instructions
 instruction = {
    -- R-Type Instructions
@@ -279,18 +304,16 @@ instruction = {
       return iinst(0x05, rs, rt, offset - current - 1)
    end,
    -- J-Type Instructions (Not implemented)
-   --[[
-   ["j"] = function (s, labels, current)
-      local label = string.match("j%s+(%g+)")
+   ["j"] = function (s, labels, current, startaddr)
+      local label = string.match(s, "j%s+(%g+)")
       local offset = labels[label]
-      return jinst(0x02, c)
+      return jinst(0x02, (startaddr/4)+offset)
    end,
-   ["jal"] = function (s, labels, current)
-      local label = string.match("j%s+(%g+)")
+   ["jal"] = function (s, labels, current, startaddr)
+      local label = string.match(s, "jal%s+(%g+)")
       local offset = labels[label]
-      return jinst(0x03, c) 
+      return jinst(0x03, (startaddr/4)+offset)
    end,
-   --]]
    -- Specialized Instruction
    ["halt"] = function (s)
       return iinst(0x3F, 0x00, 0x00, 0x0000)
