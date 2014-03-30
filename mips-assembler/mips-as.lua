@@ -322,11 +322,17 @@ instruction = {
    ["j"] = function (s, labels, current, startaddr)
       local label = string.match(s, "j%s+(%g+)")
       local offset = labels[label]
+      if not offset then
+         error('Label "%s" not found', label)
+      end
       return jinst(0x02, (startaddr/4)+offset)
    end,
    ["jal"] = function (s, labels, current, startaddr)
       local label = string.match(s, "jal%s+(%g+)")
       local offset = labels[label]
+      if not offset then
+         error('Label "%s" not found', label)
+      end
       return jinst(0x03, (startaddr/4)+offset)
    end,
    -- Specialized Instruction
