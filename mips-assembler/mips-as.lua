@@ -25,7 +25,6 @@ end
 
 -- Return label from string, or nil when there is no label
 function getlabel(s)
-   local s = string.match(s, "[^#]*")
    local labelwithcolon = string.match(s, "%g+%s*:")
    if labelwithcolon then
       return string.sub(labelwithcolon, 1, -2)
@@ -36,7 +35,6 @@ end
 
 -- Return instruction mnemonic from string
 function getinstr(s)
-   local s = string.match(s, "[^#]*")
    if string.find(s, ":") then
       return string.match(s, ":%s*(%a+)")
    else
@@ -377,36 +375,42 @@ function mipsas(inputfile, outputfile, startaddr)
    -- Instruction implementation
    local inst = instruction
 
-   -- Create label table
+   -- Strip comment and empty lines
    io.input(inputfile)
+   local src = io.tmpfile()
    for s in io.lines() do
       if not empty(s) then
-         local label = getlabel(s)
-         if label then labels[label] = offset end
+         src:write(string.match(s, "([^#]*)").."\n")
       end
-      if getinstr(s) then
-         offset = offset + 1
-      end
+   end
+   src:flush()
+
+   -- Create label table
+   src:seek("set")
+   for s in src:lines() do
+      -- Get label
+      local label = getlabel(s)
+      if label then labels[label] = offset end
+      -- Increment offset
+      if getinstr(s) then offset = offset + 1 end
    end
    -- Record number of words
    number = offset
 
    -- Process instructions
    offset = 0
-   io.input(inputfile)
-   for s in io.lines() do
-      if not empty(s) then
-         local i = getinstr(s)
-         if i then
-            if inst[i] then
-               -- Write to list
-               table.insert(list,
-                            inst[i](s, labels, offset, startaddr))
-            else
-               error(string.format('"%s" not implemented', i))
-            end
-            offset = offset + 1
+   src:seek("set")
+   for s in src:lines() do
+      local i = getinstr(s)
+      if i then
+         if inst[i] then
+            -- Write to list
+            table.insert(list,
+                         inst[i](s, labels, offset, startaddr))
+         else
+            error(string.format('"%s" not implemented', i))
          end
+         offset = offset + 1
       end
    end
 
