@@ -54,24 +54,25 @@ end
 -- Check arguments
 if #arg ~= 2 then
    print("Usage: lua mips-data.lua <input> <output>")
-end
--- Get input and outpu files from command line arguments
-io.input(arg[1])
-io.output(arg[2])
--- Read the offset
-local stackptr = io.read("*n")
-io.write(binary(stackptr, "l"))
--- Read and count data
-local data = {}
-local num = 0
-while true do
-   local d = io.read("*n")
-   if d == nil then break end
-   table.insert(data, d)
-   num = num + 1
-end
--- Write number and data
-io.write(binary(num, "l"))
-for i,v in ipairs(data) do
-   io.write(binary(v, "l"))
+else
+   -- Get input and outpu files from command line arguments
+   io.input(arg[1])
+   io.output(arg[2])
+   -- Read the offset
+   local stackptr = io.read("*n")
+   io.write(binary(stackptr, "l"))
+   -- Read and count data
+   local data = {}
+   local num = 0
+   while true do
+      local d = io.read("*n")
+      if d == nil then break end
+      table.insert(data, d)
+      num = num + 1
+   end
+   -- Write number and data
+   io.write(binary(num, "l"))
+   for i,v in ipairs(data) do
+      io.write(binary(v, "l"))
+   end
 end
