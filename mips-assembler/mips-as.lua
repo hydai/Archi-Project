@@ -279,7 +279,8 @@ instruction = {
       return iinst(0x28, rs, rt, c)
    end,
    ["lui"] = function (s)
-      local rt, c, rs = gettcs(s)
+      local rt = tonumber(string.match(s, "$(%d+)%s*"))
+      local c = tonumber(string.match(s, ",%s*(%w+)"))
       return iinst(0x0F, 0x00, rt, c)
    end,
    ["andi"] = function (s)
