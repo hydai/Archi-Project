@@ -16,7 +16,7 @@
 -- Check empty or comment only string
 function empty(s)
    local first = string.match(s, "%g")
-   if first == nil or first == "#" then
+   if first == nil or first == "#" or first == ";" then
       return true
    else
       return false
@@ -418,7 +418,7 @@ function mipsas(inputfile, outputfile, startaddr)
    for s in io.lines() do
       if not empty(s) then
          -- Strip comment
-         local stripped = string.match(s, "([^#]*)").."\n"
+         local stripped = string.match(s, "([^#;]*)").."\n"
          -- Translate register name
          local t1 = string.gsub(stripped, "$zero", "$0")
          local t2 = string.gsub(t1, "$%a%w", register)
