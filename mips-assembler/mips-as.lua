@@ -470,22 +470,13 @@ function mipsas(inputfile, outputfile, startaddr)
 end
 
 -- Start assembler
-if #arg < 1 then
+if #arg ~= 3 then
    print(
       "Usage:",
-      "   lua mips-as.lua <input-file> ",
-      "   lua mips-as.lua <input-file> <start-address>",
-      "   lua mips-as.lua <input-file> <output-file> <start-address>")
-elseif #arg == 1 then
-   local input = arg[1]
-   mipsas(input, "iimage.bin", 0)
-elseif #arg == 2 then
-   local input = arg[1]
-   local startaddr = arg[2]
-   mipsas(input, "iimage.bin", startaddr)
+      "lua mips-as.lua <input-file> <output-file> <start-address>")
 else
    local input = arg[1]
    local output = arg[2]
    local startaddr = arg[3]
-   mipsas(input, output, startaddr)
+   mipsas(input, output, tonumber(startaddr))
 end
