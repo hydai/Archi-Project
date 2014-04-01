@@ -304,7 +304,7 @@ instruction = {
       -- Lookup label name
       local offset = labels[label]
       if not offset then
-         error('Label "%s" not found', label)
+         error(string.format('Label "%s" not found', label))
       end
       return iinst(0x04, rs, rt, offset - current - 1)
    end,
@@ -313,7 +313,7 @@ instruction = {
       -- Lookup label name
       local offset = labels[label]
       if not offset then
-         error('Label "%s" not found', label)
+         error(string.format('Label "%s" not found', label))
       end
       return iinst(0x05, rs, rt, offset - current - 1)
    end,
@@ -322,7 +322,7 @@ instruction = {
       local label = string.match(s, "j%s+(%g+)")
       local offset = labels[label]
       if not offset then
-         error('Label "%s" not found', label)
+         error(string.format('Label "%s" not found', label))
       end
       return jinst(0x02, (startaddr/4)+offset)
    end,
@@ -330,7 +330,7 @@ instruction = {
       local label = string.match(s, "jal%s+(%g+)")
       local offset = labels[label]
       if not offset then
-         error('Label "%s" not found', label)
+         error(string.format('Label "%s" not found', label))
       end
       return jinst(0x03, (startaddr/4)+offset)
    end,
