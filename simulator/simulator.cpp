@@ -15,6 +15,7 @@ namespace Simulator {
         memset(reg, 0, sizeof(reg));
         pc = 0;
         cycleCounter = 0;
+        runtimeStatus = STATUS_NORMAL;
     }
     bool Simulator::loadData() {
         // open files, if something goes wrong, return false
@@ -69,9 +70,45 @@ namespace Simulator {
             // dump status
             this->dump();
             // fetch opcode
+            this->fetch();
+            if (runtimeStatus == STATUS_HALT) {
+                break;
+            }
             // decode
             // excution
 
         }
     }
+    uint_32t_word Simulator::fetch() {
+        uint_32t_word opcode;
+        bool hasError = false;
+
+        // Check address overflow
+        if (pc >= 1024 || pc < 0) {
+            fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
+            hasError = true;
+        }
+        // Check misalignment error
+        if (pc % 4 != 0) {
+            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
+            hasError = true;
+        }
+
+        // check if the error happens or not
+        if (hasError) {
+            runtimeStatus = STATUS_HALT;
+            return 0;
+        }
+
+        // get opcode
+        opcode = imemory[pc/4];
+        // PC move to next instruction
+        pc += 4;
+        return opcode;
+    }
+    instruction Simulator::decode(uint_32t_word) {
+        instruction instr;
+
+    }
+    uint_32t_word Simulator::excute(instruction);
 } // namespace Simulator
