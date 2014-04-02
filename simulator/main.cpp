@@ -4,8 +4,7 @@
 int main(int argc, char *argv[])
 {
     printf("Start simulator\n");
-    Simulator::Simulator *simulator = new Simulator();
-    simulator->init();
+    Simulator::Simulator *simulator = new Simulator::Simulator();
     simulator->run();
     printf("Finish simulator\n");
     delete simulator;
