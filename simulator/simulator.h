@@ -72,7 +72,12 @@ namespace Simulator {
             void dump();
             uint_32t_word fetch();
             instruction decode(uint_32t_word);
-            uint_32t_word excute(instruction);
+            char getInstructionType(uint_32t_word);
+            instruction parseRType(uint_32t_word);
+            instruction parseIType(uint_32t_word);
+            instruction parseJType(uint_32t_word);
+            instruction parseSType(uint_32t_word);
+            void excute(instruction);
     };
 } // namespace Simulator
 
