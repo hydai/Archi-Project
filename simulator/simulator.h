@@ -77,11 +77,20 @@ namespace Simulator {
             instruction parseIType(uint_32t_word);
             instruction parseJType(uint_32t_word);
             instruction parseSType(uint_32t_word);
-            void excute(instruction);
-            uint_32t_word signExtend(uint_32t_word);
+            void execute(instruction);
+            uint_32t_word signExtend16(uint_32t_word);
+            bool getSign(int);
             void _nor(instruction);
+            void _or(instruction);
             void _funct(instruction);
             void _lw(instruction);
+            void _lh(instruction);
+            void _add(instruction);
+            void _addi(instruction);
+            void _bne(instruction);
+            void _slt(instruction);
+            void _j(instruction);
+            void _jal(instruction);
     };
 } // namespace Simulator
 

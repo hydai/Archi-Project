@@ -78,8 +78,8 @@ namespace Simulator {
             }
             // decode
             instr = this->decode(currentInstruction);
-            // excution
-            this->excute(instr);
+            // execution
+            this->execute(instr);
             if (runtimeStatus == STATUS_HALT) {
                 break;
             }
@@ -133,7 +133,7 @@ namespace Simulator {
         return instr;
     }
 
-    void Simulator::excute(instruction instr) {
+    void Simulator::execute(instruction instr) {
         switch (instr.op) {
             case op_halt:
                 runtimeStatus = STATUS_HALT;
@@ -153,6 +153,9 @@ namespace Simulator {
             case op_j:
                 _j(instr);
                 break;
+            case op_jal:
+                _jal(instr);
+                break;
             case op_funct:
                 _funct(instr);
                 break;
@@ -162,7 +165,7 @@ namespace Simulator {
     }
     void Simulator::_funct(instruction instr) {
         switch (instr.funct) {
-            case add:
+            case funct_add:
                 _add(instr);
                 break;
             case funct_nor:

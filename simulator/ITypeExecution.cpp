@@ -1,19 +1,11 @@
 #include "simulator.h"
 
 namespace Simulator {
-    uint_32t_word Simulator::signExtend16(uint_32t_word code) {
-        if ((code >> 15)&1) {
-            return code | 0xFFFF0000;
+    void Simulator::_bne(instruction instr) {
+        if (reg[instr.rs] != reg[instr.rt]) {
+            pc = pc + 4 + (signExtend16(instr.ci)*4);
         }
-        return code;
     }
-    bool getSign(int number) {
-        if ((number >> 31) & 1) {
-            return false;
-        }
-        return true;
-    }
-
     void Simulator::_lh(instruction instr) {
         int offset = (int) signExtend16(instr.ci);
         int base = (int) reg[instr.rs];
@@ -76,29 +68,5 @@ namespace Simulator {
             return;
         }
         reg[instr.rt] = dmemory[base+offset];
-    }
-
-    void Simulator::_nor(instruction instr) {
-        reg[instr.rd] = ~(reg[instr.rs] | reg[instr.rt]);
-    }
-
-    void Simulator::_or(instruction instr) {
-        reg[instr.rd] = (reg[instr.rs] | reg[instr.rt]);
-    }
-
-    void Simulator::_add(instruction instr) {
-        int s = (int)reg[instr.rs];
-        int t = (int)reg[instr.rt];
-        int d = s+t;
-        // Check number overflow
-        if ((getSign(s) == getSign(t)) && (getSign(s) != getSign(d))) {
-            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
-        // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
-            return;
-        }
-        reg[instr.rd] = (uint_32t_word)d;
     }
 } // namespace Simulator
