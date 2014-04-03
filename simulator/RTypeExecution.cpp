@@ -45,4 +45,22 @@ namespace Simulator {
         }
         reg[instr.rd] = (uint_32t_word)d;
     }
+
+    void Simulator::_sub(instruction instr) {
+        int s = (int)reg[instr.rs];
+        int t = (int)reg[instr.rt];
+        int d = s-t;
+
+        // Check number overflow
+        if ((reg[instr.rt] == 0x8000000) ||
+            ((getSign(s) == getSign(-t)) && (getSign(s) != getSign(d)))) {
+            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        reg[instr.rd] = (uint_32t_word)d;
+    }
 } // namespace Simulator

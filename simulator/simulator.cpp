@@ -156,6 +156,9 @@ namespace Simulator {
             case op_addi:
                 _addi(instr);
                 break;
+            case op_slti:
+                _slti(instr);
+                break;
             case op_bne:
                 _bne(instr);
                 break;
@@ -179,6 +182,9 @@ namespace Simulator {
         switch (instr.funct) {
             case funct_add:
                 _add(instr);
+                break;
+            case funct_sub:
+                _sub(instr);
                 break;
             case funct_and:
                 _and(instr);

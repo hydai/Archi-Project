@@ -120,4 +120,9 @@ namespace Simulator {
         }
         reg[instr.rt] = dmemory[(base+offset)/4];
     }
+
+    void Simulator::_slti(instruction instr) {
+        reg[instr.rt] = (((int) reg[instr.rs]) < ((int) signExtend16(instr.ci)))?
+                        (1):(0);
+    }
 } // namespace Simulator
