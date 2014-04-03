@@ -26,6 +26,10 @@ namespace Simulator {
                         (1):(0);
     }
 
+    void Simulator::_jr(instruction instr) {
+        pc = reg[instr.rs];
+    }
+
     void Simulator::_add(instruction instr) {
         int s = (int)reg[instr.rs];
         int t = (int)reg[instr.rt];

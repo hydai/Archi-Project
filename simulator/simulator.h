@@ -95,6 +95,7 @@ namespace Simulator {
             void _beq(instruction);
             void _bne(instruction);
             void _j(instruction);
+            void _jr(instruction);
             void _jal(instruction);
     };
 } // namespace Simulator

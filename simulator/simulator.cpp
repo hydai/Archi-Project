@@ -193,10 +193,13 @@ namespace Simulator {
                 _or(instr);
                 break;
             case funct_xor:
-                _or(instr);
+                _xor(instr);
                 break;
             case funct_slt:
                 _slt(instr);
+                break;
+            case funct_jr:
+                _jr(instr);
                 break;
             default:
                 break;

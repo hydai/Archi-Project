@@ -7,7 +7,7 @@ namespace Simulator {
         pc = tmp;
     }
     void Simulator::_jal(instruction instr) {
-        reg[31] = pc + 4;
+        reg[31] = pc;
         this->_j(instr);
     }
 } // namespace Simulator
