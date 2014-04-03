@@ -9,6 +9,23 @@ namespace Simulator {
         reg[instr.rd] = (reg[instr.rs] | reg[instr.rt]);
     }
 
+    void Simulator::_xor(instruction instr) {
+        reg[instr.rd] = (reg[instr.rs] ^ reg[instr.rt]);
+    }
+
+    void Simulator::_and(instruction instr) {
+        reg[instr.rd] = (reg[instr.rs] & reg[instr.rt]);
+    }
+
+    void Simulator::_nand(instruction instr) {
+        reg[instr.rd] = ~(reg[instr.rs] & reg[instr.rt]);
+    }
+
+    void Simulator::_slt(instruction instr) {
+        reg[instr.rd] = (((int) reg[instr.rs]) < ((int) reg[instr.rt]))?
+                        (1):(0);
+    }
+
     void Simulator::_add(instruction instr) {
         int s = (int)reg[instr.rs];
         int t = (int)reg[instr.rt];

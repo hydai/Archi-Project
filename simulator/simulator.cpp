@@ -150,6 +150,9 @@ namespace Simulator {
             case op_bne:
                 _bne(instr);
                 break;
+            case op_beq:
+                _beq(instr);
+                break;
             case op_j:
                 _j(instr);
                 break;
@@ -168,10 +171,19 @@ namespace Simulator {
             case funct_add:
                 _add(instr);
                 break;
+            case funct_and:
+                _and(instr);
+                break;
+            case funct_nand:
+                _nand(instr);
+                break;
             case funct_nor:
                 _nor(instr);
                 break;
             case funct_or:
+                _or(instr);
+                break;
+            case funct_xor:
                 _or(instr);
                 break;
             case funct_slt:

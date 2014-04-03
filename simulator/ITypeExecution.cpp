@@ -6,6 +6,28 @@ namespace Simulator {
             pc = pc + 4 + (signExtend16(instr.ci)*4);
         }
     }
+
+    void Simulator::_beq(instruction instr) {
+        if (reg[instr.rs] == reg[instr.rt]) {
+            pc = pc + 4 + (signExtend16(instr.ci)*4);
+        }
+    }
+    
+    void Simulator::_addi(instruction instr) {
+        int s = (int)reg[instr.rs];
+        int ci = (int)signExtend16(instr.ci);
+
+        // Check number overflow
+        if ((getSign(s) == getSign(ci)) && (getSign(s) != getSign(s+ci))) {
+            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        reg[instr.rt] = s+ci;
+    }
     void Simulator::_lh(instruction instr) {
         int offset = (int) signExtend16(instr.ci);
         int base = (int) reg[instr.rs];
