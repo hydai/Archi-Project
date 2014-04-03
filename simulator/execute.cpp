@@ -7,6 +7,12 @@ namespace Simulator {
         }
         return code;
     }
+    uint_32t_word Simulator::signExtend8(uint_32t_word code) {
+        if ((code >> 7)&1) {
+            return code | 0xFFFFFF00;
+        }
+        return code;
+    }
     bool Simulator::getSign(int number) {
         if ((number >> 31) & 1) {
             return false;

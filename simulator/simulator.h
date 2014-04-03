@@ -79,6 +79,7 @@ namespace Simulator {
             instruction parseSType(uint_32t_word);
             void execute(instruction);
             uint_32t_word signExtend16(uint_32t_word);
+            uint_32t_word signExtend8(uint_32t_word);
             bool getSign(int);
             void _nor(instruction);
             void _nori(instruction);
@@ -99,6 +100,9 @@ namespace Simulator {
             void _lw(instruction);
             void _sw(instruction);
             void _lh(instruction);
+            void _lhu(instruction);
+            void _lb(instruction);
+            void _lbu(instruction);
             void _sh(instruction);
             void _sb(instruction);
             void _lui(instruction);

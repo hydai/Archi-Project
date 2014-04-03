@@ -153,8 +153,17 @@ namespace Simulator {
             case op_lh:
                 _lh(instr);
                 break;
+            case op_lhu:
+                _lhu(instr);
+                break;
             case op_sh:
                 _sh(instr);
+                break;
+            case op_lb:
+                _lb(instr);
+                break;
+            case op_lbu:
+                _lbu(instr);
                 break;
             case op_sb:
                 _sb(instr);
