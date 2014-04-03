@@ -156,6 +156,15 @@ namespace Simulator {
             case op_addi:
                 _addi(instr);
                 break;
+            case op_andi:
+                _andi(instr);
+                break;
+            case op_ori:
+                _ori(instr);
+                break;
+            case op_nori:
+                _nori(instr);
+                break;
             case op_slti:
                 _slti(instr);
                 break;

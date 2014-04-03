@@ -42,7 +42,7 @@ namespace Simulator {
         uint_32t_word mask = (getSign(reg[instr.rt]))?(0):(0x80000000);
         uint_32t_word tmp = reg[instr.rt];
         for (int i = 0; i < instr.cs; i++) {
-            tmp >> 1;
+            tmp = tmp >> 1;
             tmp = tmp | mask;
         }
         reg[instr.rd] = tmp;

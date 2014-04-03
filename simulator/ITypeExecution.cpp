@@ -13,6 +13,17 @@ namespace Simulator {
         }
     }
     
+    void Simulator::_andi(instruction instr) {
+        reg[instr.rt] = reg[instr.rs] & instr.ci;
+    }
+
+    void Simulator::_ori(instruction instr) {
+        reg[instr.rt] = reg[instr.rs] | instr.ci;
+    }
+
+    void Simulator::_nori(instruction instr) {
+        reg[instr.rt] = ~(reg[instr.rs] | instr.ci);
+    }
     void Simulator::_addi(instruction instr) {
         int s = (int)reg[instr.rs];
         int ci = (int)signExtend16(instr.ci);
@@ -28,6 +39,7 @@ namespace Simulator {
         }
         reg[instr.rt] = s+ci;
     }
+
     void Simulator::_lh(instruction instr) {
         int offset = (int) signExtend16(instr.ci);
         int base = (int) reg[instr.rs];
