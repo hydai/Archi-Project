@@ -65,7 +65,7 @@ namespace Simulator {
             runtimeStatus = STATUS_HALT;
         }
         // Check misalignment error
-        if ((base + offset) % 4 != 0) {
+        if ((base + offset) % 2 != 0) {
             fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
@@ -96,11 +96,6 @@ namespace Simulator {
             fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
-        // Check misalignment error
-        if ((base + offset) % 4 != 0) {
-            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_HALT;
-        }
 
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
@@ -126,11 +121,6 @@ namespace Simulator {
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
             fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_HALT;
-        }
-        // Check misalignment error
-        if ((base + offset) % 4 != 0) {
-            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
 
@@ -183,9 +173,8 @@ namespace Simulator {
             fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
-        // TODO: only check fact 4 
         // Check misalignment error
-        if ((base + offset) % 4 != 0) {
+        if ((base + offset) % 2 != 0) {
             fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
@@ -210,12 +199,6 @@ namespace Simulator {
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
             fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_HALT;
-        }
-        // TODO: only check fact 4 
-        // Check misalignment error
-        if ((base + offset) % 4 != 0) {
-            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
 
@@ -273,9 +256,8 @@ namespace Simulator {
             fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
-        // TODO: only check fact 4 
         // Check misalignment error
-        if ((base + offset) % 4 != 0) {
+        if ((base + offset) % 2 != 0) {
             fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
             runtimeStatus = STATUS_HALT;
         }
