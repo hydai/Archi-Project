@@ -68,7 +68,7 @@ namespace Simulator {
     void Simulator::run() {
         while (true) {
             uint_32t_word currentInstruction = 0;
-            instructions instr;
+            instruction instr;
             // dump status
             this->dump();
             // fetch opcode
@@ -113,7 +113,7 @@ namespace Simulator {
         return opcode;
     }
 
-    char getInstructionType(uint_32t_word code) {
+    char Simulator::getInstructionType(uint_32t_word code) {
         uint_32t_word opcode = code >> 26;
         char type;
         switch (opcode) {
@@ -160,7 +160,7 @@ namespace Simulator {
         return instr;
     }
 
-    instruction parseRType(uint_32t_word code) {
+    instruction Simulator::parseRType(uint_32t_word code) {
         instruction instr;
         instr.op = code >> 26;
         instr.rs = ((code << 6) >> 6) >> 21;
@@ -170,7 +170,7 @@ namespace Simulator {
         instr.funct = code & 0x0000003F;
         return instr;
     }
-    instruction parseIType(uint_32t_word code) {
+    instruction Simulator::parseIType(uint_32t_word code) {
         instruction instr;
         instr.op = code >> 26;
         instr.rs = ((code << 6) >> 6) >> 21;
@@ -178,19 +178,76 @@ namespace Simulator {
         instr.ci = code & 0x0000FFFF;
         return instr;
     }
-    instruction parseJType(uint_32t_word code) {
+    instruction Simulator::parseJType(uint_32t_word code) {
         instruction instr;
         instr.op = code >> 26;
         instr.ca = code & 0x03FFFFFF;
         return instr;
     }
-    instruction parseSType(uint_32t_word code) {
+    instruction Simulator::parseSType(uint_32t_word code) {
         instruction instr;
         instr.op = code >> 26;
         return instr;
     }
 
+    uint_32t_word Simulator::signExtend(uint_32t_word code) {
+        if ((code >> 15)&1) {
+            return code | 0xFFFF0000;
+        }
+        return code;
+    }
+    void Simulator::_lw(instruction instr) {
+        int offset = (int) signExtend(instr.ci);
+
+        // write to $0
+        if (instr.rt == 0) {
+            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // Check address overflow
+        if (reg[instr.rs] + offset >= 1024 || reg[instr.rs] + offset < 0) {
+            fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+        // Check misalignment error
+        if ((reg[instr.rs] + offset)%4 != 0) {
+            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        // TODO: Continue status
+        reg[instr.rt] = dmemory[reg[instr.rs]+offset];
+    }
+
+    void Simulator::_nor(instruction instr) {
+        reg[instr.rd] = ~(reg[instr.rs] | reg[instr.rt]);
+    }
+    void Simulator::_funct(instruction instr) {
+        switch (instr.funct) {
+            case funct_nor:
+                _nor(instr);
+                break;
+            default:
+                break;
+        }
+    }
     void Simulator::excute(instruction instr) {
-    
+        switch (instr.op) {
+            case op_halt:
+                runtimeStatus = STATUS_HALT;
+                break;
+            case op_lw:
+                _lw(instr);
+                break;
+            case op_funct:
+                _funct(instr);
+                break;
+            default:
+                break;
+        }
     }
 } // namespace Simulator
