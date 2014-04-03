@@ -3,13 +3,13 @@
 namespace Simulator {
     void Simulator::_bne(instruction instr) {
         if (reg[instr.rs] != reg[instr.rt]) {
-            pc = pc + 4 + (signExtend16(instr.ci)*4);
+            pc = pc + (signExtend16(instr.ci)*4);
         }
     }
 
     void Simulator::_beq(instruction instr) {
         if (reg[instr.rs] == reg[instr.rt]) {
-            pc = pc + 4 + (signExtend16(instr.ci)*4);
+            pc = pc + (signExtend16(instr.ci)*4);
         }
     }
     
@@ -57,7 +57,36 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = signExtend16(dmemory[base+offset] & 0x0000FFFF);
+        printf("%u\n", dmemory[(base+offset)/4]);
+        reg[instr.rt] = signExtend16(dmemory[(base+offset)/4] & 0x0000FFFF);
+    }
+
+    void Simulator::_sw(instruction instr) {
+        int offset = (int) signExtend16(instr.ci);
+        int base = (int) reg[instr.rs];
+
+        // Check number overflow
+        if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
+            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // Check address overflow
+        if (base + offset >= 1024 || base + offset < 0) {
+            fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+        // Check misalignment error
+        if ((base + offset) % 4 != 0) {
+            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        dmemory[(base+offset)/4] = reg[instr.rt];
+        
     }
 
     void Simulator::_lw(instruction instr) {
@@ -89,6 +118,6 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = dmemory[base+offset];
+        reg[instr.rt] = dmemory[(base+offset)/4];
     }
 } // namespace Simulator

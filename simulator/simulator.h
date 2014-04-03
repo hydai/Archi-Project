@@ -89,6 +89,7 @@ namespace Simulator {
             void _slt(instruction);
             void _funct(instruction);
             void _lw(instruction);
+            void _sw(instruction);
             void _lh(instruction);
             void _addi(instruction);
             void _beq(instruction);
