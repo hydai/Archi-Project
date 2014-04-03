@@ -1,6 +1,6 @@
 SIMULATOR = simulator
 TARGET = single_cycle
-SOURCE = main.cpp simulator.cpp
+SOURCE = main.cpp simulator.cpp excute.cpp decode.cpp
 CC = clang++
 CFLAGS = -Wall 
 
