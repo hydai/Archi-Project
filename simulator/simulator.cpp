@@ -204,6 +204,15 @@ namespace Simulator {
             case funct_slt:
                 _slt(instr);
                 break;
+            case funct_sll:
+                _sll(instr);
+                break;
+            case funct_srl:
+                _srl(instr);
+                break;
+            case funct_sra:
+                _sra(instr);
+                break;
             case funct_jr:
                 _jr(instr);
                 break;

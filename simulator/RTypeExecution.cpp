@@ -30,6 +30,24 @@ namespace Simulator {
         pc = reg[instr.rs];
     }
 
+    void Simulator::_sll(instruction instr) {
+        reg[instr.rd] = reg[instr.rt] << instr.cs;
+    }
+
+    void Simulator::_srl(instruction instr) {
+        reg[instr.rd] = reg[instr.rt] >> instr.cs;
+    }
+
+    void Simulator::_sra(instruction instr) {
+        uint_32t_word mask = (getSign(reg[instr.rt]))?(0):(0x80000000);
+        uint_32t_word tmp = reg[instr.rt];
+        for (int i = 0; i < instr.cs; i++) {
+            tmp >> 1;
+            tmp = tmp | mask;
+        }
+        reg[instr.rd] = tmp;
+    }
+
     void Simulator::_add(instruction instr) {
         int s = (int)reg[instr.rs];
         int t = (int)reg[instr.rt];
