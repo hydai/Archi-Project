@@ -141,8 +141,38 @@ namespace Simulator {
             case op_lw:
                 _lw(instr);
                 break;
+            case op_lh:
+                _lh(instr);
+                break;
+            case op_addi:
+                _addi(instr);
+                break;
+            case op_bne:
+                _bne(instr);
+                break;
+            case op_j:
+                _j(instr);
+                break;
             case op_funct:
                 _funct(instr);
+                break;
+            default:
+                break;
+        }
+    }
+    void Simulator::_funct(instruction instr) {
+        switch (instr.funct) {
+            case add:
+                _add(instr);
+                break;
+            case funct_nor:
+                _nor(instr);
+                break;
+            case funct_or:
+                _or(instr);
+                break;
+            case funct_slt:
+                _slt(instr);
                 break;
             default:
                 break;
