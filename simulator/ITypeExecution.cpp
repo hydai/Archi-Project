@@ -24,6 +24,11 @@ namespace Simulator {
     void Simulator::_nori(instruction instr) {
         reg[instr.rt] = ~(reg[instr.rs] | instr.ci);
     }
+
+    void Simulator::_lui(instruction instr) {
+        reg[instr.rt] = instr.ci << 16;
+    }
+
     void Simulator::_addi(instruction instr) {
         int s = (int)reg[instr.rs];
         int ci = (int)signExtend16(instr.ci);

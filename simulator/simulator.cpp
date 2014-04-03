@@ -168,6 +168,9 @@ namespace Simulator {
             case op_slti:
                 _slti(instr);
                 break;
+            case op_lui:
+                _lui(instr);
+                break;
             case op_bne:
                 _bne(instr);
                 break;
