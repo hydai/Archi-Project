@@ -106,6 +106,64 @@ namespace Simulator {
         
     }
 
+    void Simulator::_sh(instruction instr) {
+        int offset = (int) signExtend16(instr.ci);
+        int base = (int) reg[instr.rs];
+
+        // Check number overflow
+        if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
+            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // Check address overflow
+        if (base + offset >= 1024 || base + offset < 0) {
+            fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+        // TODO: only check fact 4 
+        // Check misalignment error
+        if ((base + offset) % 4 != 0) {
+            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        dmemory[(base+offset)/4] = (dmemory[(base+offset)/4] & 0xFFFF0000)
+                                    || (reg[instr.rt] & 0x0000FFFF);
+    }
+
+    void Simulator::_sb(instruction instr) {
+        int offset = (int) signExtend16(instr.ci);
+        int base = (int) reg[instr.rs];
+
+        // Check number overflow
+        if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
+            fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+        // Check address overflow
+        if (base + offset >= 1024 || base + offset < 0) {
+            fprintf(errordump, "Address overflow in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+        // TODO: only check fact 4 
+        // Check misalignment error
+        if ((base + offset) % 4 != 0) {
+            fprintf(errordump, "Misalignment error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_HALT;
+        }
+
+        // check if the error happens or not
+        if (runtimeStatus != STATUS_NORMAL) {
+            return;
+        }
+        dmemory[(base+offset)/4] = (dmemory[(base+offset)/4] & 0xFFFFFF00)
+                                    || (reg[instr.rt] & 0x000000FF);
+    }
+
     void Simulator::_lw(instruction instr) {
         int offset = (int) signExtend16(instr.ci);
         int base = (int) reg[instr.rs];
