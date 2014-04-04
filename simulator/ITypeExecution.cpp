@@ -99,11 +99,16 @@ namespace Simulator {
             runtimeStatus = STATUS_HALT;
         }
 
-        // check if the error happens or not
+        // Check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = signExtend16(dmemory[(base+offset)/4] & 0x0000FFFF);
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check if the location is in middle. If yes, shift it.
+        if ((base + offset) % 4 != 0) {
+            tmp = tmp >> 16;
+        }
+        reg[instr.rt] = signExtend16(tmp & 0x0000FFFF);
     }
 
     void Simulator::_lb(instruction instr) {
@@ -206,8 +211,17 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        dmemory[(base+offset)/4] = (dmemory[(base+offset)/4] & 0xFFFF0000)
-                                    || (reg[instr.rt] & 0x0000FFFF);
+
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check if the location is in middle. If yes, shift it.
+        if ((base + offset) % 4 != 0) {
+            tmp = tmp & 0x0000FFFF;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0xFFFF0000);
+        }
+        else {
+            tmp = tmp & 0xFFFF0000;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x0000FFFF);
+        }
     }
 
     void Simulator::_sb(instruction instr) {
@@ -288,7 +302,13 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = dmemory[(base+offset)/4] & 0x0000FFFF;
+
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check if the location is in middle. If yes, shift it.
+        if ((base + offset) % 4 != 0) {
+            tmp = tmp >> 16;
+        }
+        reg[instr.rt] = (tmp & 0x0000FFFF);
     }
     void Simulator::_slti(instruction instr) {
         // Check for writing to $0
