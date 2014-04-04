@@ -1,6 +1,6 @@
 #!bin/bash
 echo "Start judge"
-cd archi40
+cd archi24
 echo "Building simulator"
 cd simulator
 make clean
