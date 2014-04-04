@@ -132,7 +132,25 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = signExtend8(dmemory[(base+offset)/4] & 0x000000FF);
+
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check wanted position
+        if ((base + offset) % 4 == 0) {
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 1) {
+            tmp = tmp >> 8;
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 2) {
+            tmp = tmp >> 16;
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 3) {
+            tmp = tmp >> 24;
+            tmp = tmp & 0x000000FF;
+        }
+        reg[instr.rt] = signExtend8(tmp);
     }
 
     void Simulator::_lbu(instruction instr) {
@@ -156,7 +174,24 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        reg[instr.rt] = dmemory[(base+offset)/4] & 0x000000FF;
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check wanted position
+        if ((base + offset) % 4 == 0) {
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 1) {
+            tmp = tmp >> 8;
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 2) {
+            tmp = tmp >> 16;
+            tmp = tmp & 0x000000FF;
+        }
+        else if ((base + offset) % 4 == 3) {
+            tmp = tmp >> 24;
+            tmp = tmp & 0x000000FF;
+        }
+        reg[instr.rt] = tmp;
     }
 
     void Simulator::_sw(instruction instr) {
@@ -243,8 +278,24 @@ namespace Simulator {
         if (runtimeStatus != STATUS_NORMAL) {
             return;
         }
-        dmemory[(base+offset)/4] = (dmemory[(base+offset)/4] & 0xFFFFFF00)
-                                    || (reg[instr.rt] & 0x000000FF);
+        uint_32t_word tmp = dmemory[(base+offset)/4];
+        // Check wanted location.
+        if ((base + offset) % 4 == 0) {
+            tmp = tmp & 0xFFFFFF00;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x000000FF);
+        }
+        else if ((base + offset) % 4 == 1) {
+            tmp = tmp & 0xFFFF00FF;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x0000FF00);
+        }
+        else if ((base + offset) % 4 == 2) {
+            tmp = tmp & 0xFF00FFFF;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x00FF0000);
+        }
+        else if ((base + offset) % 4 == 3) {
+            tmp = tmp & 0x00FFFFFF;
+            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0xFF000000);
+        }
     }
 
     void Simulator::_lw(instruction instr) {
