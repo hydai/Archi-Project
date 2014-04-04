@@ -46,14 +46,14 @@ loop:   ;; Arithmetic related
 
         ;; Test corner case of 0x80000000
         lw      $s0,    8($zero)
-        ;; Add 1 to 0x80000000
-        addi    $s1,    $s0,    1       ;Overflow
+        ;; Add -1 to 0x80000000
+        addi    $s1,    $s0,    -1      ;Overflow
         ;; Push result
         addi    $sp,    $sp,    4
         sw      $s1,    0($sp)
         add     $5,     $s1,    $zero
         ;; Push expected result
-        addi    $t1,    $zero,  0x80000001
+        addi    $t1,    $zero,  0x7fffffff
         addi    $sp,    $sp,    4
         sw      $t1,    0($sp)
         add     $6,     $t1,    $zero
