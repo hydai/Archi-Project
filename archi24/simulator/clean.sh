@@ -1,0 +1,2 @@
+rm *.bin
+rm *.rpt

@@ -52,15 +52,9 @@ namespace Simulator {
         uint_32t_word wordNumber;
         fread(&wordNumber, sizeof(uint_32t_word), 1, dimage);
         // get data
-        printf("=============\n");
-        printf("reg[29] = %u\n", reg[29]);
-        printf("wordNumber = %u\n", wordNumber);
-        printf("==dmemory\n");
         for (int i = 0; i < wordNumber; i++) {
             fread((dmemory+i), sizeof(uint_32t_word), 1, dimage);
-            printf("%u\n", *(dmemory+i));
         }
-        printf("=============\n");
         fclose(dimage);
     }
     void Simulator::dump() {
@@ -89,6 +83,7 @@ namespace Simulator {
             if (runtimeStatus == STATUS_HALT) {
                 break;
             }
+            runtimeStatus = STATUS_NORMAL;
         }
     }
     uint_32t_word Simulator::fetch() {
