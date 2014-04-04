@@ -15,10 +15,7 @@ namespace Simulator {
     
     void Simulator::_andi(instruction instr) {
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
@@ -30,10 +27,7 @@ namespace Simulator {
 
     void Simulator::_ori(instruction instr) {
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
@@ -45,10 +39,7 @@ namespace Simulator {
 
     void Simulator::_nori(instruction instr) {
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
@@ -60,10 +51,7 @@ namespace Simulator {
 
     void Simulator::_lui(instruction instr) {
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
@@ -94,10 +82,7 @@ namespace Simulator {
         int base = (int) reg[instr.rs];
 
         // write to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
@@ -126,10 +111,7 @@ namespace Simulator {
         int base = (int) reg[instr.rs];
 
         // write to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
@@ -153,10 +135,7 @@ namespace Simulator {
         int base = (int) reg[instr.rs];
 
         // write to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
@@ -259,10 +238,7 @@ namespace Simulator {
         int base = (int) reg[instr.rs];
 
         // write to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
@@ -291,10 +267,7 @@ namespace Simulator {
         int base = (int) reg[instr.rs];
 
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
@@ -319,10 +292,7 @@ namespace Simulator {
     }
     void Simulator::_slti(instruction instr) {
         // Check for writing to $0
-        if (instr.rt == 0) {
-            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
-        }
+        this->checkWriteToRegZeroError(instr.rt);
         // check if the error happens or not
         if (runtimeStatus != STATUS_NORMAL) {
             return;

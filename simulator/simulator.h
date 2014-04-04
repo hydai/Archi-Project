@@ -81,6 +81,7 @@ namespace Simulator {
             uint_32t_word signExtend16(uint_32t_word);
             uint_32t_word signExtend8(uint_32t_word);
             bool getSign(int);
+            void checkWriteToRegZeroError(uint_32t_word);
             void _nor(instruction);
             void _nori(instruction);
             void _or(instruction);

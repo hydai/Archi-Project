@@ -19,5 +19,11 @@ namespace Simulator {
         }
         return true;
     }
+    void Simulator::checkWriteToRegZeroError(uint_32t_word regNumber) {
+        if (regNumber == 0) {
+            fprintf(errordump, "Write $0 error in cycle: %d\n", cycleCounter);
+            runtimeStatus = STATUS_CONTINUE;
+        }
+    }
 
 } // namespace Simulator
