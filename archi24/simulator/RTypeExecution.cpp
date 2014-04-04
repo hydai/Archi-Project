@@ -5,7 +5,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = ~(reg[instr.rs] | reg[instr.rt]);
@@ -15,7 +15,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (reg[instr.rs] | reg[instr.rt]);
@@ -25,7 +25,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (reg[instr.rs] ^ reg[instr.rt]);
@@ -35,7 +35,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (reg[instr.rs] & reg[instr.rt]);
@@ -45,7 +45,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = ~(reg[instr.rs] & reg[instr.rt]);
@@ -55,7 +55,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (((int) reg[instr.rs]) < ((int) reg[instr.rt]))?
@@ -70,7 +70,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = reg[instr.rt] << instr.cs;
@@ -80,7 +80,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = reg[instr.rt] >> instr.cs;
@@ -92,7 +92,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         for (int i = 0; i < instr.cs; i++) {
@@ -114,7 +114,7 @@ namespace Simulator {
             runtimeStatus = STATUS_CONTINUE;
         }
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (uint_32t_word)d;
@@ -134,7 +134,7 @@ namespace Simulator {
             runtimeStatus = STATUS_CONTINUE;
         }
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rd] = (uint_32t_word)d;

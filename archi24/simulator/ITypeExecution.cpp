@@ -18,7 +18,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -30,7 +30,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -42,7 +42,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -54,7 +54,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -64,11 +64,6 @@ namespace Simulator {
     void Simulator::_addi(instruction instr) {
         int s = (int)reg[instr.rs];
         int ci = (int)signExtend16(instr.ci);
-        printf("### instr.ci = 0x%08X\n", instr.ci);
-        printf("### ci = 0x%08X\n", ci);
-        printf("### s = 0x%08X\n", s);
-        printf("### s+ci = 0x%08X\n", s+ci);
-        printf("### instr.rt = %u\n", instr.rt);
 
         // write to $0
         this->checkWriteToRegZeroError(instr.rt);
@@ -78,12 +73,10 @@ namespace Simulator {
             runtimeStatus = STATUS_CONTINUE;
         }
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
-        printf("### instr.rt = %u\n", instr.rt);
         reg[instr.rt] = s+ci;
-        printf("### reg[instr.rt] = %u\n", reg[instr.rt]);
     }
 
     void Simulator::_lh(instruction instr) {
@@ -109,7 +102,7 @@ namespace Simulator {
         }
 
         // Check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -138,7 +131,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -180,7 +173,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -224,7 +217,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         dmemory[(base+offset)/4] = reg[instr.rt];
@@ -252,7 +245,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
@@ -284,7 +277,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -330,7 +323,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
         reg[instr.rt] = dmemory[(base+offset)/4];
@@ -359,7 +352,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT) {
             return;
         }
 
