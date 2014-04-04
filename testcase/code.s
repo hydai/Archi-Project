@@ -1,7 +1,7 @@
         ;; Use $t0 as counter
 init:   add     $t0,    $zero,  $zero
         addi    $t1,    $zero,  10
-        
+
 loop:   ;; Arithmetic related
         add     $zero,  $zero,  $zero
         sub     $zero,  $zero,  $zero
