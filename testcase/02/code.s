@@ -16,8 +16,9 @@
         addi    $sp,    $sp,    -4
         sw      $s2,    0($sp)
 
-        ;; Access memory at 0x7fffffff + 9 = 8
-        lw      $s3,    9($s0)          ;Overflow
+        ;; Access memory at 0xffffffff + 13 = 12
+        lw      $s0,    16($zero)
+        lw      $s3,    13($s0)         ;Overflow
         ;; Push result
         addi    $sp,    $sp,    -4
         sw      $s3,    0($sp)
