@@ -11,7 +11,8 @@ namespace Simulator {
     typedef unsigned int uint_32t_word ;
     const uint_32t_word STATUS_NORMAL   = 0;
     const uint_32t_word STATUS_CONTINUE = 1;
-    const uint_32t_word STATUS_HALT     = 2;
+    const uint_32t_word STATUS_SKIP     = 2;
+    const uint_32t_word STATUS_HALT     = 3;
     const uint_32t_word op_funct        = 0x00;
     const uint_32t_word op_addi         = 0x08;
     const uint_32t_word op_lw           = 0x23;

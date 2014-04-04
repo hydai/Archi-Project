@@ -18,7 +18,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -30,7 +30,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -42,7 +42,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -54,7 +54,7 @@ namespace Simulator {
         this->checkWriteToRegZeroError(instr.rt);
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -70,10 +70,10 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(s) == getSign(ci)) && (getSign(s) != getSign(s+ci))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         reg[instr.rt] = s+ci;
@@ -88,7 +88,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -102,7 +102,7 @@ namespace Simulator {
         }
 
         // Check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -122,7 +122,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -131,7 +131,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -164,7 +164,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -173,7 +173,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -203,7 +203,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -217,7 +217,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         dmemory[(base+offset)/4] = reg[instr.rt];
@@ -231,7 +231,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -245,7 +245,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -268,7 +268,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -277,7 +277,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
@@ -309,7 +309,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -323,7 +323,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         reg[instr.rt] = dmemory[(base+offset)/4];
@@ -338,7 +338,7 @@ namespace Simulator {
         // Check number overflow
         if ((getSign(base) == getSign(offset)) && (getSign(base) != getSign(base+offset))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
-            runtimeStatus = STATUS_CONTINUE;
+            runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
         }
         // Check address overflow
         if (base + offset >= 1024 || base + offset < 0) {
@@ -352,7 +352,7 @@ namespace Simulator {
         }
 
         // check if the error happens or not
-        if (runtimeStatus == STATUS_HALT) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
 
@@ -367,7 +367,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rt);
         // check if the error happens or not
-        if (runtimeStatus != STATUS_NORMAL) {
+        if (runtimeStatus == STATUS_HALT || runtimeStatus == STATUS_SKIP) {
             return;
         }
         reg[instr.rt] = (((int) reg[instr.rs]) < ((int) signExtend16(instr.ci)))?
