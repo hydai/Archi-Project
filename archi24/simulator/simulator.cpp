@@ -141,14 +141,14 @@ namespace Simulator {
 
     void Simulator::execute(instruction instr) {
         switch (instr.op) {
-            case op_halt:
-                runtimeStatus = STATUS_HALT;
+            case op_funct:
+                _funct(instr);
+                break;
+            case op_addi:
+                _addi(instr);
                 break;
             case op_lw:
                 _lw(instr);
-                break;
-            case op_sw:
-                _sw(instr);
                 break;
             case op_lh:
                 _lh(instr);
@@ -156,20 +156,23 @@ namespace Simulator {
             case op_lhu:
                 _lhu(instr);
                 break;
-            case op_sh:
-                _sh(instr);
-                break;
             case op_lb:
                 _lb(instr);
                 break;
             case op_lbu:
                 _lbu(instr);
                 break;
+            case op_sw:
+                _sw(instr);
+                break;
+            case op_sh:
+                _sh(instr);
+                break;
             case op_sb:
                 _sb(instr);
                 break;
-            case op_addi:
-                _addi(instr);
+            case op_lui:
+                _lui(instr);
                 break;
             case op_andi:
                 _andi(instr);
@@ -183,14 +186,11 @@ namespace Simulator {
             case op_slti:
                 _slti(instr);
                 break;
-            case op_lui:
-                _lui(instr);
+            case op_beq:
+                _beq(instr);
                 break;
             case op_bne:
                 _bne(instr);
-                break;
-            case op_beq:
-                _beq(instr);
                 break;
             case op_j:
                 _j(instr);
@@ -198,8 +198,8 @@ namespace Simulator {
             case op_jal:
                 _jal(instr);
                 break;
-            case op_funct:
-                _funct(instr);
+            case op_halt:
+                runtimeStatus = STATUS_HALT;
                 break;
             default:
                 break;
@@ -216,17 +216,17 @@ namespace Simulator {
             case funct_and:
                 _and(instr);
                 break;
-            case funct_nand:
-                _nand(instr);
-                break;
-            case funct_nor:
-                _nor(instr);
-                break;
             case funct_or:
                 _or(instr);
                 break;
             case funct_xor:
                 _xor(instr);
+                break;
+            case funct_nor:
+                _nor(instr);
+                break;
+            case funct_nand:
+                _nand(instr);
                 break;
             case funct_slt:
                 _slt(instr);
