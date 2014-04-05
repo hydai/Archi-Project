@@ -128,7 +128,7 @@ namespace Simulator {
         // Check for writing to $0
         this->checkWriteToRegZeroError(instr.rd);
         // Check number overflow
-        if ((reg[instr.rt] == 0x8000000) ||
+        if ((reg[instr.rt] == 0x80000000) ||
             ((getSign(s) == getSign(-t)) && (getSign(s) != getSign(d)))) {
             fprintf(errordump, "Number overflow in cycle: %d\n", cycleCounter);
             runtimeStatus = (runtimeStatus == STATUS_NORMAL)?STATUS_CONTINUE:runtimeStatus;
