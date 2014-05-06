@@ -1,7 +1,9 @@
 SIMULATOR = simulator
 TARGET = pipeline
 SOURCE = main.cpp \
-		 simulator.cpp 
+		 simulator.cpp \
+		 load.cpp \
+		 utility.cpp
 CC = clang++
 CFLAGS = -Wall 
 DBFLAGS = -g
