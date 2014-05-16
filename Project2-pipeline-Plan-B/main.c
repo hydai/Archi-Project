@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
   int addrOverflowError;
   /* Address misaligned */
   int alignError;
-  /* Temporary values for branching */
-  uint8_t br0, br1;
+  /* Temporary values for operands */
+  uint8_t op0, op1;
 
   /* Write back stage instruction */
   struct Inst instWB;
@@ -230,11 +230,17 @@ int main(int argc, char* argv[])
     switch(instDM.instruction)
     {
     case LW:
-      reg[instDM.rs]+sext16(instDM.c);
     case LH:
     case LHU:
     case LB:
     case LBU:
+      /* TODO */
+      break;
+
+    case SW:
+    case SH:
+    case SB:
+      /* TODO */
       break;
 
     default:
@@ -246,14 +252,58 @@ int main(int argc, char* argv[])
       instEX.instruction = NOP;
     else
       instEX = instID;
-    /* TODO */
+    /* Forward and execute control */
+    switch(instEX.instruction)
+    {
+    case ADD:
+      if(isWriteToRdInst(instDM.instruction) ||
+         isWriteToRtInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rd || instEX.rs == instDM.rt)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == instDM.rd || instEX.rt == instDM.rt)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      else if(isWriteToRdInst(instWB.instruction) ||
+         isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rd || instEX.rs == instWB.rt)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == instWB.rd || instEX.rt == instWB.rt)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      op0 = 
+        fwdEXfromEXDMrs ? dataDM :
+        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+      op1 =
+        fwdEXfromEXDMrt ? dataDM :
+        fwdEXfromDMWBrt ? dataWB : reg[instEX.rt];
+      /* Do addition and check for overflow */
+      /* TODO */
+      break;
+
+    default:
+      break;
+    }
 
     /* Instruction decode */
     if(stalled)
       instID = instIDstalled;
     else
       decode(&instID, ir);
-    /* Evaluate branch instructions */
+    /* Evaluate instructions with stall and flush */
     switch(instID.instruction)
     {
     case BEQ:
@@ -261,6 +311,8 @@ int main(int argc, char* argv[])
       if((isWriteToRdInst(instEX.instruction) &&
           (instID.rs == instEX.rd || instID.rt == instEX.rd)) ||
          (isWriteToRtInst(instEX.instruction) &&
+          (instID.rs == instEX.rt || instID.rt == instEX.rt)) ||
+         (isReadFromMemInst(instEX.instruction) &&
           (instID.rs == instEX.rt || instID.rt == instEX.rt)) ||
          (isReadFromMemInst(instDM.instruction) &&
           (instID.rs == instDM.rt || instID.rt == instDM.rt)))
@@ -285,13 +337,13 @@ int main(int argc, char* argv[])
             fwdIDfromEXDMrt = 1;
           }
         }
-        br0 = fwdIDfromEXDMrs ? dataDM : reg[instID.rs];
-        br1 = fwdIDfromEXDMrt ? dataDM : reg[instID.rt];
+        op0 = fwdIDfromEXDMrs ? dataDM : reg[instID.rs];
+        op1 = fwdIDfromEXDMrt ? dataDM : reg[instID.rt];
         /* Branch */
         if(instID.instruction == BEQ)
         {
           /* Branch on equal */
-          if(br0 == br1)
+          if(op0 == op1)
           {
             if(sext16(instID.c) != 0)
             {
@@ -303,7 +355,7 @@ int main(int argc, char* argv[])
         else
         {
           /* Branch on not equal */
-          if(br0 != br1)
+          if(op0 != op1)
           {
             if(sext16(instID.c) != 0)
             {
@@ -358,12 +410,14 @@ int main(int argc, char* argv[])
     /* Print stall/forward information */
     if(stall)
       fprintf(snapshot, " to_be_stalled\n");
-    else if(fwdIDfromEXDMrs)
-      fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8 "\n", instID.rs);
-    else if(fwdIDfromEXDMrt)
-      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8 "\n", instID.rt);
     else
+    {
+      if(fwdIDfromEXDMrs)
+        fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8, instID.rs);
+      if(fwdIDfromEXDMrt)
+        fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
       fprintf(snapshot, "\n");
+    }
 
     fprintf(snapshot, "EX: ");
     fprintInstName(snapshot, &instEX);
