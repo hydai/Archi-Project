@@ -1,6 +1,6 @@
 LUA		= lua
-MIPS_AS		= ../../mips-assembler/mips-as.lua
-MIPS_DATA	= ../../mips-assembler/mips-data.lua
+MIPS_AS		= ../../../mips-assembler/mips-as.lua
+MIPS_DATA	= ../../../mips-assembler/mips-data.lua
 OFFSET		= 0x0
 
 all		: iimage.bin dimage.bin
