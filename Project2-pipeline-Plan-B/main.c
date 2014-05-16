@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
   /* Instruction register */
   uint32_t ir;
   /* Flush flag */
-  int flush = 0;
+  int flush;
   /* Stall flag */
-  int stall = 0;
+  int stall;
 
   /* Write back stage instruction */
   struct Inst instWB;
@@ -115,6 +115,9 @@ int main(int argc, char* argv[])
   /* Execute */
   while(!quit)
   {
+    /* Reset stall and flush flags */
+    stall = 0;
+    flush = 0;
     /* Write back */
     instWB = instDM;
     dataWB = dataDM;
@@ -133,9 +136,9 @@ int main(int argc, char* argv[])
     case SRA:
       /* Load result to rd */
       if(instWB.rd != 0)
-	reg[instWB.rd] = dataWB;
+        reg[instWB.rd] = dataWB;
       else
-	fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
+        fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
       break;
 
     case ADDI:
@@ -151,9 +154,9 @@ int main(int argc, char* argv[])
     case SLTI:
       /* Load result to rt */
       if(instWB.rd != 0)
-	reg[instWB.rt] = dataWB;
+        reg[instWB.rt] = dataWB;
       else
-	fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
+        fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
       break;
 
     case JAL:
@@ -244,6 +247,151 @@ int main(int argc, char* argv[])
   fclose(snapshot);
   fclose(errordump);
   return EXIT_SUCCESS;
+}
+
+/* Decode instruction and store it */
+void decode(struct Inst* inst, uint32_t ir)
+{
+  switch((ir>>26)&0x3F)
+  {
+    /* R-Type instructions */
+  case 0x00:
+    /* Check for NOP instruction */
+    if(ir == 0x00000000)
+    {
+      /* The instruction is NOP */
+      inst->instruction = NOP;
+    }
+    else
+    {
+      /* Determine actual instruction */
+      switch(ir & 0x3F)
+      {
+      case 0x20: /* add */
+        inst->instruction = ADD;
+        break;
+      case 0x22: /* sub */
+        inst->instruction = SUB;
+        break;
+      case 0x24: /* and */
+        inst->instruction = AND;
+        break;
+      case 0x25: /* or */
+        inst->instruction = OR;
+        break;
+      case 0x26: /* xor */
+        inst->instruction = XOR;
+        break;
+      case 0x27: /* nor */
+        inst->instruction = NOR;
+        break;
+      case 0x28: /* nand */
+        inst->instruction = NAND;
+        break;
+      case 0x2A: /* slt */
+        inst->instruction = SLT;
+        break;
+      case 0x00: /* sll */
+        inst->instruction = SLL;
+        break;
+      case 0x02: /* srl */
+        inst->instruction = SRL;
+        break;
+      case 0x03: /* sra */
+        inst->instruction = SRA;
+        break;
+      case 0x08: /* jr */
+        inst->instruction = JR;
+        break;
+      default:
+        assert(0);
+        break;
+      }
+      /* Load operands */
+      inst->rs = (ir>>21) & 0x1F;
+      inst->rt = (ir>>16) & 0x1F;
+      inst->rd = (ir>>11) & 0x1F;
+      inst->c  = (ir>>6)  & 0x1F;
+    }
+    break;
+
+    /* I-Type instructions */
+  case 0x08: /* addi */
+    inst->instruction = ADDI;
+    goto iinst_load_operand;
+  case 0x23: /* lw */
+    inst->instruction = LW;
+    goto iinst_load_operand;
+  case 0x21: /* lh */
+    inst->instruction = LH;
+    goto iinst_load_operand;
+  case 0x25: /* lhu */
+    inst->instruction = LHU;
+    goto iinst_load_operand;
+  case 0x20: /* lb */
+    inst->instruction = LB;
+    goto iinst_load_operand;
+  case 0x24: /* lbu */
+    inst->instruction = LBU;
+    goto iinst_load_operand;
+  case 0x2B: /* sw */
+    inst->instruction = SW;
+    goto iinst_load_operand;
+  case 0x29: /* sh */
+    inst->instruction = SH;
+    goto iinst_load_operand;
+  case 0x28: /* sb */
+    inst->instruction = SB;
+    goto iinst_load_operand;
+  case 0x0F: /* lui */
+    inst->instruction = LUI;
+    goto iinst_load_operand;
+  case 0x0C: /* andi */
+    inst->instruction = ANDI;
+    goto iinst_load_operand;
+  case 0x0D: /* ori */
+    inst->instruction = ORI;
+    goto iinst_load_operand;
+  case 0x0E: /* nori */
+    inst->instruction = NORI;
+    goto iinst_load_operand;
+  case 0x0A: /* slti */
+    inst->instruction = SLTI;
+    goto iinst_load_operand;
+  case 0x04: /* beq */
+    inst->instruction = BEQ;
+    goto iinst_load_operand;
+  case 0x05: /* bne */
+    inst->instruction = BNE;
+    goto iinst_load_operand;
+  iinst_load_operand:
+    /* Load operands */
+    inst->rs = (ir>>21) & 0x1F;
+    inst->rt = (ir>>16) & 0x1F;
+    inst->c  = ir & 0xFFFF;
+    break;
+
+    /* J-Type instructions */
+  case 0x02: /* j */
+    inst->instruction = J;
+    goto jinst_load_operand;
+  case 0x03: /* jal */
+    inst->instruction = JAL;
+    goto jinst_load_operand;
+  jinst_load_operand:
+    /* Load operand */
+    inst->c = ir & 0x03FFFFFF;
+    break;
+
+    /* Specialized instruction */
+  case 0x3F: /* halt */
+    inst->instruction = HALT;
+    break;
+
+  default:
+    assert(0);
+    break;
+  }
 }
 
 /* Print the mnemonic of the instruction to a file using fprintf() */

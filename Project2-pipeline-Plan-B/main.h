@@ -70,6 +70,7 @@ struct Inst
   uint32_t c;
 };
 
+void decode(struct Inst* inst, uint32_t ir);
 void fprintInstName(FILE* file_ptr, struct Inst* inst);
 
 #endif
