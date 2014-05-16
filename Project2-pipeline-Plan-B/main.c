@@ -106,6 +106,9 @@ int main(int argc, char* argv[])
     fread(dmemory+i, sizeof(uint32_t), 1, dimage);
   fclose(dimage);
 
+  /* Initialize each register with 0 */
+  memset(reg, 0, sizeof(uint32_t)*REG_NUM);
+
   /* Initialize each stage with NOP */
   instWB.instruction = NOP;
   instDM.instruction = NOP;
@@ -180,6 +183,7 @@ int main(int argc, char* argv[])
     /* TODO */
 
     /* Execute instruction */
+    instEX = instID;
     /* TODO */
 
     /* Instruction decode */
