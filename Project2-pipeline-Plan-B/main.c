@@ -118,6 +118,14 @@ int main(int argc, char* argv[])
   /* Execute */
   while(!quit)
   {
+    /* Print cycle index */
+    fprintf(snapshot, "cycle %" PRIu32 "\n", cycle);
+    /* Dump register contents */
+    for(i = 0; i < REG_NUM; i++)
+      fprintf(snapshot, "$%02d: 0x%08" PRIX32 "\n", i, reg[i]);
+    /* Print program counter */
+    fprintf(snapshot, "PC: 0x%08" PRIX32 "\n", pc);
+
     /* Reset stall and flush flags */
     stall = 0;
     flush = 0;
@@ -196,15 +204,6 @@ int main(int argc, char* argv[])
     /* Increment program counter */
     if(!stall && !flush)
       pc = pc + 4;
-
-    /* Dump snapshot */
-    /* Print cycle index */
-    fprintf(snapshot, "cycle %" PRIu32 "\n", cycle);
-    /* Dump register contents */
-    for(i = 0; i < REG_NUM; i++)
-      fprintf(snapshot, "$%02d: 0x%08" PRIX32 "\n", i, reg[i]);
-    /* Print program counter */
-    fprintf(snapshot, "PC: 0x%08" PRIX32 "\n", pc);
 
     /* Print each stage */
     /* Print instruction register */
