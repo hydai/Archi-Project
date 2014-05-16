@@ -72,5 +72,10 @@ struct Inst
 
 void decode(struct Inst* inst, uint32_t ir);
 void fprintInstName(FILE* file_ptr, struct Inst* inst);
+int isWriteToRdInst(enum InstCode code);
+int isWriteToRtInst(enum InstCode code);
+int isWriteToMemInst(enum InstCode code);
+int isReadFromMemInst(enum InstCode code);
+uint32_t sext16(uint32_t x);
 
 #endif

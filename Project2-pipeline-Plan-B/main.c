@@ -44,10 +44,36 @@ int main(int argc, char* argv[])
   uint32_t pc;
   /* Instruction register */
   uint32_t ir = 0;
+  /* Instruction register stalled */
+  uint32_t irstalled = 0;
   /* Flush flag */
-  int flush;
+  int flush = 0;
   /* Stall flag */
-  int stall;
+  int stall = 0;
+  /* Stalled flag */
+  int stalled = 0;
+  /* ID forward from EX-DM for rs flag */
+  int fwdIDfromEXDMrs;
+  /* ID forward from EX-DM for rt flag */
+  int fwdIDfromEXDMrt;
+  /* EX forward from EX-DM for rs flag */
+  int fwdEXfromEXDMrs;
+  /* EX forward from EX-DM for rt flag */
+  int fwdEXfromEXDMrt;
+  /* EX forward from DM-WB for rs flag */
+  int fwdEXfromDMWBrs;
+  /* EX forward from DM-WB for rt flag */
+  int fwdEXfromDMWBrt;
+  /* Write to $0 error flag */
+  int writeToZeroError;
+  /* Number overflow error flag */
+  int numOverflowError;
+  /* Memory address overflow error flag */
+  int addrOverflowError;
+  /* Address misaligned */
+  int alignError;
+  /* Temporary values for branching */
+  uint8_t br0, br1;
 
   /* Write back stage instruction */
   struct Inst instWB;
@@ -66,6 +92,8 @@ int main(int argc, char* argv[])
 
   /* Instruction decode stage instruction */
   struct Inst instID;
+  /* Instruction decode stage stalled instruction */
+  struct Inst instIDstalled;
 
   /* Loop counter */
   int i;
@@ -126,9 +154,20 @@ int main(int argc, char* argv[])
     /* Print program counter */
     fprintf(snapshot, "PC: 0x%08" PRIX32 "\n", pc);
 
-    /* Reset stall and flush flags */
+    /* Reset flags */
+    stalled = stall ? 1 : 0;
     stall = 0;
     flush = 0;
+    fwdIDfromEXDMrs = 0;
+    fwdIDfromEXDMrt = 0;
+    fwdEXfromEXDMrs = 0;
+    fwdEXfromEXDMrt = 0;
+    fwdEXfromDMWBrs = 0;
+    fwdEXfromDMWBrt = 0;
+    writeToZeroError  = 0;
+    numOverflowError  = 0;
+    addrOverflowError = 0;
+    alignError        = 0;
 
     /* Write back */
     instWB = instDM;
@@ -150,7 +189,7 @@ int main(int argc, char* argv[])
       if(instWB.rd != 0)
         reg[instWB.rd] = dataWB;
       else
-        fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
+        writeToZeroError = 1;
       break;
 
     case ADDI:
@@ -168,7 +207,7 @@ int main(int argc, char* argv[])
       if(instWB.rt != 0)
         reg[instWB.rt] = dataWB;
       else
-        fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
+        writeToZeroError = 1;
       break;
 
     case JAL:
@@ -188,21 +227,119 @@ int main(int argc, char* argv[])
     /* Data memory access */
     instDM = instEX;
     dataDM = dataEX;
-    /* TODO */
+    switch(instDM.instruction)
+    {
+    case LW:
+      reg[instDM.rs]+sext16(instDM.c);
+    case LH:
+    case LHU:
+    case LB:
+    case LBU:
+      break;
+
+    default:
+      break;
+    }
 
     /* Execute instruction */
-    instEX = instID;
+    if(stalled)
+      instEX.instruction = NOP;
+    else
+      instEX = instID;
     /* TODO */
 
     /* Instruction decode */
-    if(!stall)
+    if(stalled)
+      instID = instIDstalled;
+    else
       decode(&instID, ir);
+    /* Evaluate branch instructions */
+    switch(instID.instruction)
+    {
+    case BEQ:
+    case BNE:
+      if((isWriteToRdInst(instEX.instruction) &&
+          (instID.rs == instEX.rd || instID.rt == instEX.rd)) ||
+         (isWriteToRtInst(instEX.instruction) &&
+          (instID.rs == instEX.rt || instID.rt == instEX.rt)) ||
+         (isReadFromMemInst(instDM.instruction) &&
+          (instID.rs == instDM.rt || instID.rt == instDM.rt)))
+      {
+        /* Stall the datapath */
+        stall = 1;
+      }
+      else
+      {
+        /* Check for forward conditions */
+        if(isWriteToRdInst(instDM.instruction) ||
+           isWriteToRtInst(instDM.instruction))
+        {
+          if(instID.rs == instDM.rd || instID.rs == instDM.rt)
+          {
+            /* Forward rs from EX-DM */
+            fwdIDfromEXDMrs = 1;
+          }
+          if(instID.rt == instDM.rd || instID.rt == instDM.rt)
+          {
+            /* Forward rt from EX-DM */
+            fwdIDfromEXDMrt = 1;
+          }
+        }
+        br0 = fwdIDfromEXDMrs ? dataDM : reg[instID.rs];
+        br1 = fwdIDfromEXDMrt ? dataDM : reg[instID.rt];
+        /* Branch */
+        if(instID.instruction == BEQ)
+        {
+          /* Branch on equal */
+          if(br0 == br1)
+          {
+            if(sext16(instID.c) != 0)
+            {
+              pc = pc + 4 * sext16(instID.c);
+              flush = 1;
+            }
+          }
+        }
+        else
+        {
+          /* Branch on not equal */
+          if(br0 != br1)
+          {
+            if(sext16(instID.c) != 0)
+            {
+              pc = pc + 4 * sext16(instID.c);
+              flush = 1;
+            }
+          }
+        }
+      }
+      break;
+
+    case JR:
+    case J:
+    case JAL:
+      /* TODO: Jump instructions */
+      break;
+
+    default:
+      break;
+    }
+    if(stall)
+    {
+      /* Stall instruction */
+      instIDstalled = instID;
+    }
 
     /* Instruction fetch */
     /* Load instruction register */
-    ir = imemory[pc/4];
+    if(stalled)
+      ir = irstalled;
+    else
+      ir = imemory[pc/4];
     /* Increment program counter */
-    if(!stall && !flush)
+    if(stall)
+      irstalled = ir;
+    else if(!flush)
       pc = pc + 4;
 
     /* Print each stage */
@@ -220,9 +357,11 @@ int main(int argc, char* argv[])
     fprintInstName(snapshot, &instID);
     /* Print stall/forward information */
     if(stall)
-      fprintf(snapshot, " to_be_stalled");
-    else if(/* Forward */0)
-      ;/* TODO */
+      fprintf(snapshot, " to_be_stalled\n");
+    else if(fwdIDfromEXDMrs)
+      fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8 "\n", instID.rs);
+    else if(fwdIDfromEXDMrt)
+      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8 "\n", instID.rt);
     else
       fprintf(snapshot, "\n");
 
@@ -247,6 +386,16 @@ int main(int argc, char* argv[])
 
     /* Increment cycle */
     cycle = cycle + 1;
+
+    /* Report error */
+    if(writeToZeroError)
+      fprintf(errordump, "Write $0 error in cycle: %" PRIu32 "\n", cycle);
+    if(numOverflowError)
+      fprintf(errordump, "Number overflow in cycle: %" PRIu32 "\n", cycle);
+    if(addrOverflowError)
+      fprintf(errordump, "Address overflow in cycle: %" PRIu32 "\n", cycle);
+    if(numOverflowError)
+      fprintf(errordump, "Misalignment error in cycle: %" PRIu32 "\n", cycle);
   }
 
   fclose(snapshot);
@@ -506,4 +655,91 @@ void fprintInstName(FILE* file_ptr, struct Inst* inst)
   }
 
   return;
+}
+
+/* Returns true if the instruction writes to rd */
+int isWriteToRdInst(enum InstCode code)
+{
+  switch(code)
+  {
+  case ADD:
+  case SUB:
+  case AND:
+  case OR:
+  case XOR:
+  case NOR:
+  case NAND:
+  case SLT:
+  case SLL:
+  case SRL:
+  case SRA:
+    return 1;
+  default:
+    return 0;
+  }
+}
+
+/* Returns true if the instruction writes to rt */
+int isWriteToRtInst(enum InstCode code)
+{
+  switch(code)
+  {
+  case ADDI:
+  case LW:
+  case LH:
+  case LHU:
+  case LB:
+  case LBU:
+  case LUI:
+  case ANDI:
+  case ORI:
+  case NORI:
+  case SLTI:
+    return 1;
+  default:
+    return 0;
+  }
+}
+
+/* Returns true if the instruction writes to memory */
+int isWriteToMemInst(enum InstCode code)
+{
+  switch(code)
+  {
+  case SW:
+  case SH:
+  case SB:
+    return 1;
+  default:
+    return 0;
+  }
+}
+
+/* Returns true if the instruction reads from memory */
+int isReadFromMemInst(enum InstCode code)
+{
+  switch(code)
+  {
+  case LW:
+  case LH:
+  case LHU:
+  case LB:
+  case LBU:
+    return 1;
+  default:
+    return 0;
+  }
+}
+
+/* Sign extends a 16-bit integer */
+uint32_t sext16(uint32_t x)
+{
+  if((x >> 15) & 0x1)
+  {
+    return x | 0xFFFF0000;
+  }
+  else
+  {
+    return x & 0x0000FFFF;
+  }
 }
