@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   /* Program counter */
   uint32_t pc;
   /* Instruction register */
-  uint32_t ir;
+  uint32_t ir = 0;
   /* Flush flag */
   int flush;
   /* Stall flag */
