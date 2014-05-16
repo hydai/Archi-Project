@@ -82,6 +82,9 @@ int main(int argc, char* argv[])
   errordump = fopen("error_dump.rpt", "w");
   snapshot = fopen("snapshot.rpt", "w");
 
+  /* Initialize each register with 0 */
+  memset(reg, 0, sizeof(uint32_t)*REG_NUM);
+
   /* Load instruction memory image */
   /* Initialize to zero */
   memset(imemory, 0, MEM_SIZE);
@@ -105,9 +108,6 @@ int main(int argc, char* argv[])
   for(i = 0; i < inputsize; i++)
     fread(dmemory+i, sizeof(uint32_t), 1, dimage);
   fclose(dimage);
-
-  /* Initialize each register with 0 */
-  memset(reg, 0, sizeof(uint32_t)*REG_NUM);
 
   /* Initialize each stage with NOP */
   instWB.instruction = NOP;
