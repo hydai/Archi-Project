@@ -118,6 +118,7 @@ int main(int argc, char* argv[])
     /* Reset stall and flush flags */
     stall = 0;
     flush = 0;
+
     /* Write back */
     instWB = instDM;
     dataWB = dataDM;
@@ -153,7 +154,7 @@ int main(int argc, char* argv[])
     case NORI:
     case SLTI:
       /* Load result to rt */
-      if(instWB.rd != 0)
+      if(instWB.rt != 0)
         reg[instWB.rt] = dataWB;
       else
         fprintf(errordump, "Write $0 error in cycle %" PRIu32 "\n", cycle);
@@ -182,7 +183,8 @@ int main(int argc, char* argv[])
     /* TODO */
 
     /* Instruction decode */
-    /* TODO */
+    if(!stall)
+      decode(&instID, ir);
 
     /* Instruction fetch */
     /* Load instruction register */
