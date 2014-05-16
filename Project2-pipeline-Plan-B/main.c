@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
   /* Instruction memory image file */
   FILE* iimage;
-  /* Data  memory image file */
+  /* Data memory image file */
   FILE* dimage;
   /* Per-cycle state output file */
   FILE* snapshot;
