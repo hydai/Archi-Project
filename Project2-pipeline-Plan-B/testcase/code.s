@@ -19,7 +19,7 @@ loop:   ;; Arithmetic related
         lui     $t3,    0x0
         lb      $t4,    1($t3)          ;Stall
         lbu     $t3,    32($zero)       ;0x00
-        lh      $t4,    11($zero)       ;0x00
+        lh      $t4,    10($zero)       ;0x00
         sra     $t3,    $t4,    3       ;Stall & Forward
         nand    $t5,    $t3,    $t4     ;Forward
 
