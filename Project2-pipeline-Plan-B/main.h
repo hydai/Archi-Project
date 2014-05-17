@@ -77,5 +77,7 @@ int isWriteToRtInst(enum InstCode code);
 int isWriteToMemInst(enum InstCode code);
 int isReadFromMemInst(enum InstCode code);
 uint32_t sext16(uint32_t x);
+uint32_t sext8(uint32_t x);
+int getSign(uint32_t x);
 
 #endif

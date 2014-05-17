@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   /* Address misaligned */
   int alignError;
   /* Temporary values for operands */
-  uint8_t op0, op1;
+  uint32_t op0, op1;
 
   /* Write back stage instruction */
   struct Inst instWB;
@@ -234,13 +234,135 @@ int main(int argc, char* argv[])
     case LHU:
     case LB:
     case LBU:
-      /* TODO */
-      break;
-
     case SW:
     case SH:
     case SB:
-      /* TODO */
+      /* Check for number overflow and address overflow */
+      if((getSign(sext16(instDM.c)) ==
+          getSign(reg[instDM.rs])) &&
+         (getSign(sext16(instDM.c)) !=
+          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      {
+        /* Number overflow */
+        numOverflowError = 1;
+      }
+      /* Check for overflow */
+      /* Only upper bound is checked because the address is an unsigned integer */
+      if(sext16(instDM.c) + reg[instDM.rs] >= 1024)
+      {
+        /* Address overflow */
+        addrOverflowError = 1;
+      }
+      /* Do actual operation */
+      switch(instDM.instruction)
+      {
+      case LW:
+        if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
+        {
+          /* Misalignment error */
+          alignError = 1;
+        }
+        if(!addrOverflowError && !alignError)
+        {
+          /* Do actual load */
+          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+        }
+        break;
+
+      case LH:
+        if((sext16(instDM.c) + reg[instDM.rs]) % 2 != 0)
+        {
+          /* Misalignment error */
+          alignError = 1;
+        }
+        if(!addrOverflowError && !alignError)
+        {
+          /* Do actual load */
+          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          /* Shift if not aligned to word width */
+          if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
+            dataDM = dataDM >> 16;
+          dataDM = sext16(dataDM & 0x0000FFFF);
+        }
+        break;
+
+      case LHU:
+        if((sext16(instDM.c) + reg[instDM.rs]) % 2 != 0)
+        {
+          /* Misalignment error */
+          alignError = 1;
+        }
+        if(!addrOverflowError && !alignError)
+        {
+          /* Do actual load */
+          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          /* Shift if not aligned to word width */
+          if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
+            dataDM = dataDM >> 16;
+          dataDM = dataDM & 0x0000FFFF;
+        }
+        break;
+
+      case LB:
+        if(!addrOverflowError)
+        {
+          /* Do actual load */
+          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          /* Determine shift amount of byte to load */
+          switch(sext16(instDM.c) + reg[instDM.rs])
+          {
+          case 0:
+            dataDM = dataDM >> 0;
+            break;
+          case 1:
+            dataDM = dataDM >> 8;
+            break;
+          case 2:
+            dataDM = dataDM >> 16;
+            break;
+          case 3:
+            dataDM = dataDM >> 24;
+            break;
+          }
+          /* Load and sign extend the value */
+          dataDM = sext8(dataDM & 0x000000FF);
+        }
+        break;
+        
+      case LBU:
+        if(!addrOverflowError)
+        {
+          /* Do actual load */
+          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          /* Determine shift amount of byte to load */
+          switch(sext16(instDM.c) + reg[instDM.rs])
+          {
+          case 0:
+            dataDM = dataDM >> 0;
+            break;
+          case 1:
+            dataDM = dataDM >> 8;
+            break;
+          case 2:
+            dataDM = dataDM >> 16;
+            break;
+          case 3:
+            dataDM = dataDM >> 24;
+            break;
+          }
+          /* Mask the value to 8-bits */
+          dataDM = dataDM & 0x000000FF;
+        }
+        break;
+
+      case SW:
+      case SH:
+      case SB:
+
+      default:
+        assert(0);
+        break;
+      }
       break;
 
     default:
@@ -255,44 +377,186 @@ int main(int argc, char* argv[])
     /* Forward and execute control */
     switch(instEX.instruction)
     {
+      /* rd depends on rs and rt */
     case ADD:
-      if(isWriteToRdInst(instDM.instruction) ||
-         isWriteToRtInst(instDM.instruction))
+    case SUB:
+    case AND:
+    case OR:
+    case XOR:
+    case NOR:
+    case NAND:
+    case SLT:
+      if(isWriteToRdInst(instDM.instruction))
       {
-        if(instEX.rs == instDM.rd || instEX.rs == instDM.rt)
+        if(instEX.rs == instDM.rd)
         {
           /* Forward rs from EX-DM */
           fwdEXfromEXDMrs = 1;
         }
-        if(instEX.rt == instDM.rd || instEX.rt == instDM.rt)
+        if(instEX.rt == instDM.rd)
         {
           /* Forward rt from EX-DM */
           fwdEXfromEXDMrt = 1;
         }
       }
-      else if(isWriteToRdInst(instWB.instruction) ||
-         isWriteToRtInst(instWB.instruction))
+      else if(isWriteToRtInst(instDM.instruction))
       {
-        if(instEX.rs == instWB.rd || instEX.rs == instWB.rt)
+        if(instEX.rs == instDM.rt)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == instDM.rt)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      else if(isWriteToRdInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rd)
         {
           /* Forward rs from DM-WB */
           fwdEXfromDMWBrs = 1;
         }
-        if(instEX.rt == instWB.rd || instEX.rt == instWB.rt)
+        if(instEX.rt == instWB.rd)
         {
           /* Forward rt from DM-WB */
           fwdEXfromDMWBrt = 1;
         }
       }
-      op0 = 
+      else if(isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rt)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == instWB.rt)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      op0 =
         fwdEXfromEXDMrs ? dataDM :
         fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
       op1 =
         fwdEXfromEXDMrt ? dataDM :
         fwdEXfromDMWBrt ? dataWB : reg[instEX.rt];
-      /* Do addition and check for overflow */
-      /* TODO */
+      /* Do actual operation */
+      switch(instEX.instruction)
+      {
+      case ADD:
+        dataEX = op0 + op1;
+        if(getSign(op0) == getSign(op1) &&
+           getSign(op0) != getSign(dataEX))
+        {
+          /* Overflow */
+          numOverflowError = 1;
+        }
+        break;
+      case SUB:
+        dataEX = op0 - op1;
+        if((op1 == 0x80000000) ||
+           (getSign(op0) == getSign(-op1) &&
+            getSign(op0) != getSign(dataEX)))
+        {
+          /* Overflow */
+          numOverflowError = 1;
+        }
+        break;
+      case AND:
+        dataEX = op0 & op1;
+        break;
+      case OR:
+        dataEX = op0 | op1;
+        break;
+      case XOR:
+        dataEX = op0 ^ op1;
+        break;
+      case NOR:
+        dataEX = ~(op0 | op1);
+        break;
+      case NAND:
+        dataEX = ~(op0 & op1);
+        break;
+      case SLT:
+        dataEX = op0 < op1 ? 1 : 0;
+        break;
+
+      default:
+        assert(0);
+        break;
+      }
       break;
+
+      /* rd depends on rt only */
+    case SLL:
+    case SRL:
+    case SRA:
+      if(isWriteToRdInst(instDM.instruction))
+      {
+        if(instEX.rt == instDM.rd)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      else if(isWriteToRtInst(instDM.instruction))
+      {
+        if(instEX.rt == instDM.rt)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      else if(isWriteToRdInst(instWB.instruction))
+      {
+        if(instEX.rt == instWB.rd)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      else if(isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rt == instWB.rt)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      op0 =
+        fwdEXfromEXDMrs ? dataDM :
+        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+      op0 =
+        fwdEXfromEXDMrt ? dataDM :
+        fwdEXfromDMWBrt ? dataWB : reg[instEX.rt];
+      /* Do actual operation */
+      switch(instEX.instruction)
+      {
+      case SLL:
+        dataEX = op0 << op1;
+        break;
+      case SRL:
+        dataEX = op0 >> op1;
+        break;
+      case SRA:
+        for(i = 0; i < instEX.c; i++)
+        {
+          dataEX = dataEX >> 1;
+          dataEX = dataEX | (getSign(op1) ? 0x80000000 : 0);
+        }
+        break;
+
+      default:
+        assert(0);
+        break;
+      }
+      break;
+
+      /* TODO: rd depends on memory and rt */
 
     default:
       break;
@@ -345,7 +609,7 @@ int main(int argc, char* argv[])
           /* Branch on equal */
           if(op0 == op1)
           {
-            if(sext16(instID.c) != 0)
+            if(sext16(instID.c) != 1)
             {
               pc = pc + 4 * sext16(instID.c);
               flush = 1;
@@ -357,7 +621,7 @@ int main(int argc, char* argv[])
           /* Branch on not equal */
           if(op0 != op1)
           {
-            if(sext16(instID.c) != 0)
+            if(sext16(instID.c) != 1)
             {
               pc = pc + 4 * sext16(instID.c);
               flush = 1;
@@ -422,10 +686,15 @@ int main(int argc, char* argv[])
     fprintf(snapshot, "EX: ");
     fprintInstName(snapshot, &instEX);
     /* Print forward information */
-    if(/* Forward */0)
-      ;/* TODO */
-    else
-      fprintf(snapshot, "\n");
+    if(fwdEXfromEXDMrs)
+      fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8, instID.rs);
+    else if(fwdEXfromDMWBrs)
+      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+    if(fwdEXfromEXDMrt)
+      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+    else if(fwdEXfromDMWBrt)
+      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+    fprintf(snapshot, "\n");
 
     fprintf(snapshot, "DM: ");
     fprintInstName(snapshot, &instDM);
@@ -785,7 +1054,7 @@ int isReadFromMemInst(enum InstCode code)
   }
 }
 
-/* Sign extends a 16-bit integer */
+/* Sign extends a 16-bit integer to 32-bit */
 uint32_t sext16(uint32_t x)
 {
   if((x >> 15) & 0x1)
@@ -796,4 +1065,26 @@ uint32_t sext16(uint32_t x)
   {
     return x & 0x0000FFFF;
   }
+}
+
+/* Sign extends a 8-bit integer to 32-bit */
+uint32_t sext8(uint32_t x)
+{
+  if((x >> 7) & 0x1)
+  {
+    return x | 0xFFFFFF00;
+  }
+  else
+  {
+    return x & 0x000000FF;
+  }
+}
+
+/* Return sign bit of a 32-bit integer */
+int getSign(uint32_t x)
+{
+  if((x >> 31) & 0x1)
+    return 1;
+  else
+    return 0;
 }
