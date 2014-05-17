@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
         numOverflowError = 1;
       }
       /* Check for overflow */
-      /* Only upper bound is checked because the address is an unsigned integer */
+      /* TODO: Bug in this condition */
       if(sext16(instDM.c) + reg[instDM.rs] >= 1024)
       {
         /* Address overflow */
@@ -328,7 +328,7 @@ int main(int argc, char* argv[])
           dataDM = sext8(dataDM & 0x000000FF);
         }
         break;
-        
+
       case LBU:
         if(!addrOverflowError)
         {
@@ -358,6 +358,8 @@ int main(int argc, char* argv[])
       case SW:
       case SH:
       case SB:
+        /* TODO: Implement store operations */
+        break;
 
       default:
         assert(0);
@@ -482,7 +484,7 @@ int main(int argc, char* argv[])
         dataEX = ~(op0 & op1);
         break;
       case SLT:
-        dataEX = op0 < op1 ? 1 : 0;
+        dataEX = (int)op0 < (int)op1 ? 1 : 0;
         break;
 
       default:
@@ -530,9 +532,7 @@ int main(int argc, char* argv[])
       op0 =
         fwdEXfromEXDMrs ? dataDM :
         fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
-      op0 =
-        fwdEXfromEXDMrt ? dataDM :
-        fwdEXfromDMWBrt ? dataWB : reg[instEX.rt];
+      op1 = instEX.c;
       /* Do actual operation */
       switch(instEX.instruction)
       {
@@ -546,8 +546,81 @@ int main(int argc, char* argv[])
         for(i = 0; i < instEX.c; i++)
         {
           dataEX = dataEX >> 1;
-          dataEX = dataEX | (getSign(op1) ? 0x80000000 : 0);
+          dataEX = dataEX | (getSign(op0) ? 0x80000000 : 0);
         }
+        break;
+
+      default:
+        assert(0);
+        break;
+      }
+      break;
+
+      /* rt depends on rs only */
+    case ADDI:
+    case ANDI:
+    case ORI:
+    case NORI:
+    case SLTI:
+      if(isWriteToRdInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rd)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+      }
+      else if(isWriteToRtInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rt)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+      }
+      else if(isWriteToRdInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rd)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+      }
+      else if(isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rt)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+      }
+      op0 =
+        fwdEXfromEXDMrs ? dataDM :
+        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+      op1 = instEX.c;
+      /* Do actual operation */
+      switch(instEX.instruction)
+      {
+      case ADDI:
+        dataEX = op0 + op1;
+        if(getSign(op0) == getSign(op1) &&
+           getSign(op0) != getSign(dataEX))
+        {
+          /* Overflow */
+          numOverflowError = 1;
+        }
+        break;
+      case ANDI:
+        dataEX = op0 & op1;
+        break;
+      case ORI:
+        dataEX = op0 | op1;
+        break;
+      case NORI:
+        dataEX = ~(op0 | op1);
+        break;
+      case SLTI:
+        dataEX = (int)op0 < (int)op1 ? 1 : 0;
         break;
 
       default:
@@ -570,6 +643,49 @@ int main(int argc, char* argv[])
     /* Evaluate instructions with stall and flush */
     switch(instID.instruction)
     {
+      /* rd depends on rs and rt */
+    case ADD:
+    case SUB:
+    case AND:
+    case OR:
+    case XOR:
+    case NOR:
+    case NAND:
+    case SLT:
+      if(isReadFromMemInst(instEX.instruction))
+      {
+        if(instID.rs == instEX.rt)
+          stall = 1;
+        if(instID.rt == instEX.rt)
+          stall = 1;
+      }
+      break;
+
+      /* rd depends on rt only */
+    case SLL:
+    case SRL:
+    case SRA:
+      if(isReadFromMemInst(instEX.instruction))
+      {
+        if(instID.rt == instEX.rt)
+          stall = 1;
+      }
+      break;
+
+      /* rt depends on rs only */
+    case ADDI:
+    case ANDI:
+    case ORI:
+    case NORI:
+    case SLTI:
+      if(isReadFromMemInst(instEX.instruction))
+      {
+        if(instID.rs == instEX.rt)
+          stall = 1;
+      }
+      break;
+
+      /* Branch instructions */
     case BEQ:
     case BNE:
       if((isWriteToRdInst(instEX.instruction) &&
@@ -687,13 +803,13 @@ int main(int argc, char* argv[])
     fprintInstName(snapshot, &instEX);
     /* Print forward information */
     if(fwdEXfromEXDMrs)
-      fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8, instID.rs);
+      fprintf(snapshot, " fwd_EX-DM_rs_$%" PRIu8, instEX.rs);
     else if(fwdEXfromDMWBrs)
-      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+      fprintf(snapshot, " fwd_DM-WB_rs_$%" PRIu8, instEX.rs);
     if(fwdEXfromEXDMrt)
-      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instEX.rt);
     else if(fwdEXfromDMWBrt)
-      fprintf(snapshot, " fwd_EX-DM_rt_$%" PRIu8, instID.rt);
+      fprintf(snapshot, " fwd_DM-WB_rt_$%" PRIu8, instEX.rt);
     fprintf(snapshot, "\n");
 
     fprintf(snapshot, "DM: ");
@@ -713,12 +829,16 @@ int main(int argc, char* argv[])
     /* Report error */
     if(writeToZeroError)
       fprintf(errordump, "Write $0 error in cycle: %" PRIu32 "\n", cycle);
-    if(numOverflowError)
-      fprintf(errordump, "Number overflow in cycle: %" PRIu32 "\n", cycle);
     if(addrOverflowError)
       fprintf(errordump, "Address overflow in cycle: %" PRIu32 "\n", cycle);
-    if(numOverflowError)
+    if(alignError)
       fprintf(errordump, "Misalignment error in cycle: %" PRIu32 "\n", cycle);
+    if(numOverflowError)
+      fprintf(errordump, "Number overflow in cycle: %" PRIu32 "\n", cycle);
+
+    /* Halt if address overflow or misalignment error occured */
+    if(addrOverflowError || numOverflowError)
+      quit = 1;
   }
 
   fclose(snapshot);
