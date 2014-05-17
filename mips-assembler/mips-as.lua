@@ -226,15 +226,15 @@ instruction = {
       return rinst(0x00, rs, rt, rd, 0x00, 0x2A)
    end,
    ["sll"] = function (s)
-      local rd, rs, rt = getdtc(s)
+      local rd, rt, c = getdtc(s)
       return rinst(0x00, 0x00, rt, rd, c, 0x00)
    end,
    ["srl"] = function (s)
-      local rd, rs, rt = getdtc(s)
+      local rd, rt, c = getdtc(s)
       return rinst(0x00, 0x00, rt, rd, c, 0x02)
    end,
    ["sra"] = function (s)
-      local rd, rs, rt = getdtc(s)
+      local rd, rt, c = getdtc(s)
       return rinst(0x00, 0x00, rt, rd, c, 0x03)
    end,
    ["jr"] = function (s)
