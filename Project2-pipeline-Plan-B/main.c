@@ -380,12 +380,12 @@ int main(int argc, char* argv[])
     case SLT:
       if(isWriteToRdInst(instDM.instruction))
       {
-        if(instEX.rs == instDM.rd)
+        if(instEX.rs == instDM.rd && instEX.rs != 0)
         {
           /* Forward rs from EX-DM */
           fwdEXfromEXDMrs = 1;
         }
-        if(instEX.rt == instDM.rd)
+        if(instEX.rt == instDM.rd && instEX.rt != 0)
         {
           /* Forward rt from EX-DM */
           fwdEXfromEXDMrt = 1;
@@ -393,12 +393,12 @@ int main(int argc, char* argv[])
       }
       else if(isWriteToRtInst(instDM.instruction))
       {
-        if(instEX.rs == instDM.rt)
+        if(instEX.rs == instDM.rt && instEX.rs != 0)
         {
           /* Forward rs from EX-DM */
           fwdEXfromEXDMrs = 1;
         }
-        if(instEX.rt == instDM.rt)
+        if(instEX.rt == instDM.rt && instEX.rt != 0)
         {
           /* Forward rt from EX-DM */
           fwdEXfromEXDMrt = 1;
@@ -406,12 +406,12 @@ int main(int argc, char* argv[])
       }
       else if(isWriteToRdInst(instWB.instruction))
       {
-        if(instEX.rs == instWB.rd)
+        if(instEX.rs == instWB.rd && instEX.rs != 0)
         {
           /* Forward rs from DM-WB */
           fwdEXfromDMWBrs = 1;
         }
-        if(instEX.rt == instWB.rd)
+        if(instEX.rt == instWB.rd && instEX.rt != 0)
         {
           /* Forward rt from DM-WB */
           fwdEXfromDMWBrt = 1;
@@ -419,12 +419,12 @@ int main(int argc, char* argv[])
       }
       else if(isWriteToRtInst(instWB.instruction))
       {
-        if(instEX.rs == instWB.rt)
+        if(instEX.rs == instWB.rt && instEX.rs != 0)
         {
           /* Forward rs from DM-WB */
           fwdEXfromDMWBrs = 1;
         }
-        if(instEX.rt == instWB.rt)
+        if(instEX.rt == instWB.rt && instEX.rt != 0)
         {
           /* Forward rt from DM-WB */
           fwdEXfromDMWBrt = 1;
@@ -487,36 +487,39 @@ int main(int argc, char* argv[])
     case SLL:
     case SRL:
     case SRA:
-      if(isWriteToRdInst(instDM.instruction))
+      if(instEX.rt != 0)
       {
-        if(instEX.rt == instDM.rd)
+        if(isWriteToRdInst(instDM.instruction))
+        {
+          if(instEX.rt == instDM.rd)
+          {
+            /* Forward rt from EX-DM */
+            fwdEXfromEXDMrt = 1;
+          }
+        }
+        else if(isWriteToRtInst(instDM.instruction))
+        {
+          if(instEX.rt == instDM.rt)
         {
           /* Forward rt from EX-DM */
           fwdEXfromEXDMrt = 1;
         }
-      }
-      else if(isWriteToRtInst(instDM.instruction))
-      {
-        if(instEX.rt == instDM.rt)
-        {
-          /* Forward rt from EX-DM */
-          fwdEXfromEXDMrt = 1;
         }
-      }
-      else if(isWriteToRdInst(instWB.instruction))
-      {
-        if(instEX.rt == instWB.rd)
+        else if(isWriteToRdInst(instWB.instruction))
         {
-          /* Forward rt from DM-WB */
-          fwdEXfromDMWBrt = 1;
+          if(instEX.rt == instWB.rd)
+          {
+            /* Forward rt from DM-WB */
+            fwdEXfromDMWBrt = 1;
+          }
         }
-      }
-      else if(isWriteToRtInst(instWB.instruction))
-      {
-        if(instEX.rt == instWB.rt)
+        else if(isWriteToRtInst(instWB.instruction))
         {
+          if(instEX.rt == instWB.rt)
+          {
           /* Forward rt from DM-WB */
-          fwdEXfromDMWBrt = 1;
+            fwdEXfromDMWBrt = 1;
+          }
         }
       }
       op0 =
@@ -552,36 +555,39 @@ int main(int argc, char* argv[])
     case ORI:
     case NORI:
     case SLTI:
-      if(isWriteToRdInst(instDM.instruction))
+      if(instEX.rs != 0)
       {
-        if(instEX.rs == instDM.rd)
+        if(isWriteToRdInst(instDM.instruction))
         {
-          /* Forward rs from EX-DM */
-          fwdEXfromEXDMrs = 1;
+          if(instEX.rs == instDM.rd)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
         }
-      }
-      else if(isWriteToRtInst(instDM.instruction))
-      {
-        if(instEX.rs == instDM.rt)
+        else if(isWriteToRtInst(instDM.instruction))
         {
-          /* Forward rs from EX-DM */
-          fwdEXfromEXDMrs = 1;
+          if(instEX.rs == instDM.rt)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
         }
-      }
-      else if(isWriteToRdInst(instWB.instruction))
-      {
-        if(instEX.rs == instWB.rd)
+        else if(isWriteToRdInst(instWB.instruction))
         {
+          if(instEX.rs == instWB.rd)
+          {
           /* Forward rs from DM-WB */
-          fwdEXfromDMWBrs = 1;
+            fwdEXfromDMWBrs = 1;
+          }
         }
-      }
-      else if(isWriteToRtInst(instWB.instruction))
-      {
-        if(instEX.rs == instWB.rt)
+        else if(isWriteToRtInst(instWB.instruction))
         {
-          /* Forward rs from DM-WB */
-          fwdEXfromDMWBrs = 1;
+          if(instEX.rs == instWB.rt)
+          {
+            /* Forward rs from DM-WB */
+            fwdEXfromDMWBrs = 1;
+          }
         }
       }
       op0 =
@@ -631,36 +637,39 @@ int main(int argc, char* argv[])
     case SH:
     case SB:
       /* Check forwarding condition */
-      if(isWriteToRdInst(instDM.instruction))
+      if(instEX.rs != 0)
       {
-        if(instEX.rs == instDM.rd)
+        if(isWriteToRdInst(instDM.instruction))
         {
-          /* Forward rs from EX-DM */
-          fwdEXfromEXDMrs = 1;
+          if(instEX.rs == instDM.rd)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
         }
-      }
-      else if(isWriteToRtInst(instDM.instruction))
-      {
-        if(instEX.rs == instDM.rt)
+        else if(isWriteToRtInst(instDM.instruction))
         {
-          /* Forward rs from EX-DM */
-          fwdEXfromEXDMrs = 1;
+          if(instEX.rs == instDM.rt)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
         }
-      }
-      else if(isWriteToRdInst(instWB.instruction))
-      {
-        if(instEX.rs == instWB.rd)
+        else if(isWriteToRdInst(instWB.instruction))
         {
-          /* Forward rs from DM-WB */
+          if(instEX.rs == instWB.rd)
+          {
+            /* Forward rs from DM-WB */
           fwdEXfromDMWBrs = 1;
+          }
         }
-      }
-      else if(isWriteToRtInst(instWB.instruction))
-      {
-        if(instEX.rs == instWB.rt)
+        else if(isWriteToRtInst(instWB.instruction))
         {
-          /* Forward rs from DM-WB */
-          fwdEXfromDMWBrs = 1;
+          if(instEX.rs == instWB.rt)
+          {
+            /* Forward rs from DM-WB */
+            fwdEXfromDMWBrs = 1;
+          }
         }
       }
       /* Check for number overflow */
@@ -704,9 +713,9 @@ int main(int argc, char* argv[])
     case SLT:
       if(isReadFromMemInst(instEX.instruction))
       {
-        if(instID.rs == instEX.rt)
+        if(instID.rs == instEX.rt && instID.rs != 0)
           stall = 1;
-        if(instID.rt == instEX.rt)
+        if(instID.rt == instEX.rt && instID.rt != 0)
           stall = 1;
       }
       break;
@@ -717,7 +726,7 @@ int main(int argc, char* argv[])
     case SRA:
       if(isReadFromMemInst(instEX.instruction))
       {
-        if(instID.rt == instEX.rt)
+        if(instID.rt == instEX.rt && instID.rt != 0)
           stall = 1;
       }
       break;
@@ -730,7 +739,7 @@ int main(int argc, char* argv[])
     case SLTI:
       if(isReadFromMemInst(instEX.instruction))
       {
-        if(instID.rs == instEX.rt)
+        if(instID.rs == instEX.rt && instID.rs != 0)
           stall = 1;
       }
       break;
@@ -739,13 +748,17 @@ int main(int argc, char* argv[])
     case BEQ:
     case BNE:
       if((isWriteToRdInst(instEX.instruction) &&
-          (instID.rs == instEX.rd || instID.rt == instEX.rd)) ||
+          ((instID.rs == instEX.rd && instID.rs != 0) ||
+	   (instID.rt == instEX.rd && instID.rt != 0))) ||
          (isWriteToRtInst(instEX.instruction) &&
-          (instID.rs == instEX.rt || instID.rt == instEX.rt)) ||
+          ((instID.rs == instEX.rt && instID.rs != 0) ||
+	   (instID.rt == instEX.rt && instID.rt != 0))) ||
          (isReadFromMemInst(instEX.instruction) &&
-          (instID.rs == instEX.rt || instID.rt == instEX.rt)) ||
+          ((instID.rs == instEX.rt && instID.rs != 0) ||
+	   (instID.rt == instEX.rt && instID.rt != 0))) ||
          (isReadFromMemInst(instDM.instruction) &&
-          (instID.rs == instDM.rt || instID.rt == instDM.rt)))
+          ((instID.rs == instDM.rt && instID.rs != 0) ||
+	   (instID.rt == instDM.rt && instID.rt != 0))))
       {
         /* Stall the datapath */
         stall = 1;
@@ -756,12 +769,14 @@ int main(int argc, char* argv[])
         if(isWriteToRdInst(instDM.instruction) ||
            isWriteToRtInst(instDM.instruction))
         {
-          if(instID.rs == instDM.rd || instID.rs == instDM.rt)
+          if(instID.rs != 0 &&
+	     (instID.rs == instDM.rd || instID.rs == instDM.rt))
           {
             /* Forward rs from EX-DM */
             fwdIDfromEXDMrs = 1;
           }
-          if(instID.rt == instDM.rd || instID.rt == instDM.rt)
+          if(instID.rt != 0 &&
+	     (instID.rt == instDM.rd || instID.rt == instDM.rt))
           {
             /* Forward rt from EX-DM */
             fwdIDfromEXDMrt = 1;
