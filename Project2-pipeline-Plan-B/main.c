@@ -344,9 +344,66 @@ int main(int argc, char* argv[])
         break;
 
       case SW:
+        if(dataDM % 4 != 0)
+        {
+          /* Misalignment error */
+          alignError = 1;
+        }
+        if(!addrOverflowError && !alignError)
+        {
+          /* Do actual store */
+          dmemory[dataDM/4] = reg[instDM.rt];
+        }
+        break;
+
       case SH:
+        if(dataDM % 2 != 0)
+        {
+          /* Misalignment error */
+          alignError = 1;
+        }
+        if(!addrOverflowError && !alignError)
+        {
+          /* Determine which half of word to store */
+          if(dataDM % 4 != 0)
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0x0000FFFF) |
+              ((reg[instDM.rt] << 16) & 0xFFFF0000);
+          else
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0xFFFF0000) |
+              ((reg[instDM.rt] << 0) & 0x0000FFFF);
+        }
+        break;
+
       case SB:
-        /* TODO: Implement store operations */
+        if(!addrOverflowError && !alignError)
+        {
+          /* Determine which byte of word to store */
+          switch(dataDM % 4)
+          {
+          case 0:
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0xFFFFFF00) |
+              ((reg[instDM.rt] << 0) & 0x000000FF);
+            break;
+          case 1:
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0xFFFF00FF) |
+              ((reg[instDM.rt] << 8) & 0x0000FF00);
+            break;
+          case 2:
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0xFF00FFFF) |
+              ((reg[instDM.rt] << 16) & 0x00FF0000);
+            break;
+          case 3:
+            dmemory[dataDM/4] =
+              (dmemory[dataDM/4] & 0x00FFFFFF) |
+              ((reg[instDM.rt] << 24) & 0xFF000000);
+            break;
+          }
+        }
         break;
 
       default:
