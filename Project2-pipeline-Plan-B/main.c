@@ -237,16 +237,7 @@ int main(int argc, char* argv[])
     case SW:
     case SH:
     case SB:
-      /* Check for number overflow and address overflow */
-      if((getSign(sext16(instDM.c)) ==
-          getSign(reg[instDM.rs])) &&
-         (getSign(sext16(instDM.c)) !=
-          getSign(sext16(instDM.c) + reg[instDM.rs])))
-      {
-        /* Number overflow */
-        numOverflowError = 1;
-      }
-      /* Check for overflow */
+      /* Check for address overflow */
       if(sext16(instDM.c) + reg[instDM.rs] >= 1024)
       {
         /* Address overflow */
@@ -630,7 +621,26 @@ int main(int argc, char* argv[])
       }
       break;
 
-      /* TODO: rd depends on memory and rt */
+      /* rd depends on memory and rt */
+    case LW:
+    case LH:
+    case LHU:
+    case LB:
+    case LBU:
+    case SW:
+    case SH:
+    case SB:
+      /* Check for number overflow */
+      if((getSign(sext16(instDM.c)) ==
+          getSign(reg[instDM.rs])) &&
+         (getSign(sext16(instDM.c)) !=
+          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      {
+        /* Number overflow */
+        numOverflowError = 1;
+      }
+      break;
+
 
     default:
       break;
