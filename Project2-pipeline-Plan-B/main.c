@@ -458,7 +458,7 @@ int main(int argc, char* argv[])
           fwdEXfromEXDMrt = 1;
         }
       }
-      else if(isWriteToRtInst(instDM.instruction))
+      if(isWriteToRtInst(instDM.instruction))
       {
         if(instEX.rs == instDM.rt && instEX.rs != 0)
         {
@@ -471,7 +471,7 @@ int main(int argc, char* argv[])
           fwdEXfromEXDMrt = 1;
         }
       }
-      else if(isWriteToRdInst(instWB.instruction))
+      if(isWriteToRdInst(instWB.instruction))
       {
         if(instEX.rs == instWB.rd && instEX.rs != 0)
         {
@@ -484,7 +484,7 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrt = 1;
         }
       }
-      else if(isWriteToRtInst(instWB.instruction))
+      if(isWriteToRtInst(instWB.instruction))
       {
         if(instEX.rs == instWB.rt && instEX.rs != 0)
         {
@@ -564,15 +564,15 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrt = 1;
           }
         }
-        else if(isWriteToRtInst(instDM.instruction))
+        if(isWriteToRtInst(instDM.instruction))
         {
           if(instEX.rt == instDM.rt)
-        {
+          {
           /* Forward rt from EX-DM */
           fwdEXfromEXDMrt = 1;
+          }
         }
-        }
-        else if(isWriteToRdInst(instWB.instruction))
+        if(isWriteToRdInst(instWB.instruction))
         {
           if(instEX.rt == instWB.rd)
           {
@@ -580,7 +580,7 @@ int main(int argc, char* argv[])
             fwdEXfromDMWBrt = 1;
           }
         }
-        else if(isWriteToRtInst(instWB.instruction))
+        if(isWriteToRtInst(instWB.instruction))
         {
           if(instEX.rt == instWB.rt)
           {
@@ -632,7 +632,7 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
-        else if(isWriteToRtInst(instDM.instruction))
+        if(isWriteToRtInst(instDM.instruction))
         {
           if(instEX.rs == instDM.rt)
           {
@@ -640,7 +640,7 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
-        else if(isWriteToRdInst(instWB.instruction))
+        if(isWriteToRdInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rd)
           {
@@ -648,7 +648,7 @@ int main(int argc, char* argv[])
             fwdEXfromDMWBrs = 1;
           }
         }
-        else if(isWriteToRtInst(instWB.instruction))
+        if(isWriteToRtInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rt)
           {
@@ -714,7 +714,7 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
-        else if(isWriteToRtInst(instDM.instruction))
+        if(isWriteToRtInst(instDM.instruction))
         {
           if(instEX.rs == instDM.rt)
           {
@@ -722,7 +722,7 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
-        else if(isWriteToRdInst(instWB.instruction))
+        if(isWriteToRdInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rd)
           {
@@ -730,7 +730,7 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrs = 1;
           }
         }
-        else if(isWriteToRtInst(instWB.instruction))
+        if(isWriteToRtInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rt)
           {
