@@ -2,7 +2,7 @@
 namespace Simulator {
     void Simulator::_j(instruction instr) {
         uint_32t_word tmp = 0;
-        tmp = tmp | (pc & 0xF000000);
+        tmp = tmp | (pc & 0xF0000000);
         tmp = tmp | (instr.ca << 2);
         pc = tmp;
     }
