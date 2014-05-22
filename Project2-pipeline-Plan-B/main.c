@@ -851,8 +851,8 @@ int main(int argc, char* argv[])
             fwdIDfromEXDMrt = 1;
           }
         }
-        op0 = fwdIDfromEXDMrs ? dataDM : reg[instID.rs];
-        op1 = fwdIDfromEXDMrt ? dataDM : reg[instID.rt];
+        op0 = fwdIDfromEXDMrs ? dataEX : reg[instID.rs];
+        op1 = fwdIDfromEXDMrt ? dataEX : reg[instID.rt];
         /* Branch */
         if(instID.instruction == BEQ)
         {
@@ -905,7 +905,7 @@ int main(int argc, char* argv[])
         }
         /* Write to program counter */
         if(fwdIDfromEXDMrs)
-          pc = dataDM;
+          pc = dataEX;
         else
           pc = reg[instID.rs];
         /* Flush the instruction register */
