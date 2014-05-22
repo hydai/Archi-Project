@@ -267,11 +267,12 @@ int main(int argc, char* argv[])
         }
         if(!addrOverflowError && !alignError)
         {
-          /* Do actual load */
-          dataDM = dmemory[dataDM/4];
-          /* Shift if not aligned to word width */
-          if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
-            dataDM = dataDM >> 16;
+          /* Do actual load, shift if not aligned to word width */
+          if(dataDM % 4 != 0)
+            dataDM = dmemory[dataDM/4] >> 16;
+          else
+            dataDM = dmemory[dataDM/4];
+          /* Sign extend to 32-bit */
           dataDM = sext16(dataDM & 0x0000FFFF);
         }
         break;
@@ -284,11 +285,12 @@ int main(int argc, char* argv[])
         }
         if(!addrOverflowError && !alignError)
         {
-          /* Do actual load */
-          dataDM = dmemory[dataDM/4];
-          /* Shift if not aligned to word width */
+          /* Do actual load, shift if not aligned to word width */
           if(dataDM % 4 != 0)
-            dataDM = dataDM >> 16;
+            dataDM = dmemory[dataDM/4] >> 16;
+          else
+            dataDM = dmemory[dataDM/4];
+          /* Clear out higher half word */
           dataDM = dataDM & 0x0000FFFF;
         }
         break;
@@ -296,22 +298,20 @@ int main(int argc, char* argv[])
       case LB:
         if(!addrOverflowError)
         {
-          /* Do actual load */
-          dataDM = dmemory[dataDM/4];
           /* Determine shift amount of byte to load */
-          switch(sext16(instDM.c) + reg[instDM.rs])
+          switch(dataDM % 4)
           {
           case 0:
-            dataDM = dataDM >> 0;
+            dataDM = dmemory[dataDM/4] >> 0;
             break;
           case 1:
-            dataDM = dataDM >> 8;
+            dataDM = dmemory[dataDM/4] >> 8;
             break;
           case 2:
-            dataDM = dataDM >> 16;
+            dataDM = dmemory[dataDM/4] >> 16;
             break;
           case 3:
-            dataDM = dataDM >> 24;
+            dataDM = dmemory[dataDM/4] >> 24;
             break;
           }
           /* Load and sign extend the value */
@@ -322,22 +322,20 @@ int main(int argc, char* argv[])
       case LBU:
         if(!addrOverflowError)
         {
-          /* Do actual load */
-          dataDM = dmemory[dataDM/4];
           /* Determine shift amount of byte to load */
-          switch(sext16(instDM.c) + reg[instDM.rs])
+          switch(dataDM % 4)
           {
           case 0:
-            dataDM = dataDM >> 0;
+            dataDM = dmemory[dataDM/4] >> 0;
             break;
           case 1:
-            dataDM = dataDM >> 8;
+            dataDM = dmemory[dataDM/4] >> 8;
             break;
           case 2:
-            dataDM = dataDM >> 16;
+            dataDM = dmemory[dataDM/4] >> 16;
             break;
           case 3:
-            dataDM = dataDM >> 24;
+            dataDM = dmemory[dataDM/4] >> 24;
             break;
           }
           /* Mask the value to 8-bits */
