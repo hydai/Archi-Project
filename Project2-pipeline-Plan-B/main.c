@@ -621,7 +621,7 @@ int main(int argc, char* argv[])
       }
       break;
 
-      /* rd depends on memory and rt */
+      /* rt depends on memory and rs */
     case LW:
     case LH:
     case LHU:
@@ -638,6 +638,39 @@ int main(int argc, char* argv[])
       {
         /* Number overflow */
         numOverflowError = 1;
+      }
+      /* Check forwarding condition */
+      if(isWriteToRdInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rd)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+      }
+      else if(isWriteToRtInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rt)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+      }
+      else if(isWriteToRdInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rd)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+      }
+      else if(isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rt)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
       }
       break;
 
