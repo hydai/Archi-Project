@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
     case SH:
     case SB:
       /* Check for address overflow */
-      if(sext16(instDM.c) + reg[instDM.rs] >= 1024)
+      if(dataDM >= 1024)
       {
         /* Address overflow */
         addrOverflowError = 1;
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
       switch(instDM.instruction)
       {
       case LW:
-        if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
+        if(dataDM % 4 != 0)
         {
           /* Misalignment error */
           alignError = 1;
@@ -255,12 +255,12 @@ int main(int argc, char* argv[])
         if(!addrOverflowError && !alignError)
         {
           /* Do actual load */
-          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          dataDM = dmemory[dataDM/4];
         }
         break;
 
       case LH:
-        if((sext16(instDM.c) + reg[instDM.rs]) % 2 != 0)
+        if(dataDM % 2 != 0)
         {
           /* Misalignment error */
           alignError = 1;
@@ -268,7 +268,7 @@ int main(int argc, char* argv[])
         if(!addrOverflowError && !alignError)
         {
           /* Do actual load */
-          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          dataDM = dmemory[dataDM/4];
           /* Shift if not aligned to word width */
           if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
             dataDM = dataDM >> 16;
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
         break;
 
       case LHU:
-        if((sext16(instDM.c) + reg[instDM.rs]) % 2 != 0)
+        if(dataDM % 2 != 0)
         {
           /* Misalignment error */
           alignError = 1;
@@ -285,9 +285,9 @@ int main(int argc, char* argv[])
         if(!addrOverflowError && !alignError)
         {
           /* Do actual load */
-          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          dataDM = dmemory[dataDM/4];
           /* Shift if not aligned to word width */
-          if((sext16(instDM.c) + reg[instDM.rs]) % 4 != 0)
+          if(dataDM % 4 != 0)
             dataDM = dataDM >> 16;
           dataDM = dataDM & 0x0000FFFF;
         }
@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
         if(!addrOverflowError)
         {
           /* Do actual load */
-          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          dataDM = dmemory[dataDM/4];
           /* Determine shift amount of byte to load */
           switch(sext16(instDM.c) + reg[instDM.rs])
           {
@@ -323,7 +323,7 @@ int main(int argc, char* argv[])
         if(!addrOverflowError)
         {
           /* Do actual load */
-          dataDM = dmemory[(sext16(instDM.c) + reg[instDM.rs])/4];
+          dataDM = dmemory[dataDM/4];
           /* Determine shift amount of byte to load */
           switch(sext16(instDM.c) + reg[instDM.rs])
           {
@@ -630,15 +630,6 @@ int main(int argc, char* argv[])
     case SW:
     case SH:
     case SB:
-      /* Check for number overflow */
-      if((getSign(sext16(instDM.c)) ==
-          getSign(reg[instDM.rs])) &&
-         (getSign(sext16(instDM.c)) !=
-          getSign(sext16(instDM.c) + reg[instDM.rs])))
-      {
-        /* Number overflow */
-        numOverflowError = 1;
-      }
       /* Check forwarding condition */
       if(isWriteToRdInst(instDM.instruction))
       {
@@ -672,8 +663,23 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrs = 1;
         }
       }
+      /* Check for number overflow */
+      if((getSign(sext16(instDM.c)) ==
+          getSign(reg[instDM.rs])) &&
+         (getSign(sext16(instDM.c)) !=
+          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      {
+        /* Number overflow */
+        numOverflowError = 1;
+      }
+      /* Get the operands */
+      op0 = sext16(instEX.c);
+      op1 =
+        fwdEXfromEXDMrs ? dataDM :
+        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+      /* Pass down the address */
+      dataEX = op0 + op1;
       break;
-
 
     default:
       break;
