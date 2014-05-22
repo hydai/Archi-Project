@@ -790,11 +790,8 @@ int main(int argc, char* argv[])
           /* Branch on equal */
           if(op0 == op1)
           {
-            if(sext16(instID.c) != 1)
-            {
-              pc = pc + 4 * sext16(instID.c);
-              flush = 1;
-            }
+            pc = pc + 4 * sext16(instID.c);
+            flush = 1;
           }
         }
         else
@@ -802,11 +799,8 @@ int main(int argc, char* argv[])
           /* Branch on not equal */
           if(op0 != op1)
           {
-            if(sext16(instID.c) != 1)
-            {
-              pc = pc + 4 * sext16(instID.c);
-              flush = 1;
-            }
+            pc = pc + 4 * sext16(instID.c);
+            flush = 1;
           }
         }
       }
