@@ -247,7 +247,6 @@ int main(int argc, char* argv[])
         numOverflowError = 1;
       }
       /* Check for overflow */
-      /* TODO: Bug in this condition */
       if(sext16(instDM.c) + reg[instDM.rs] >= 1024)
       {
         /* Address overflow */
@@ -602,6 +601,7 @@ int main(int argc, char* argv[])
       switch(instEX.instruction)
       {
       case ADDI:
+	op1 = sext16(op1);
         dataEX = op0 + op1;
         if(getSign(op0) == getSign(op1) &&
            getSign(op0) != getSign(dataEX))
@@ -620,6 +620,7 @@ int main(int argc, char* argv[])
         dataEX = ~(op0 | op1);
         break;
       case SLTI:
+	op1 = sext16(op1);
         dataEX = (int)op0 < (int)op1 ? 1 : 0;
         break;
 
