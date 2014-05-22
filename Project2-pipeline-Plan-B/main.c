@@ -42,12 +42,16 @@ int main(int argc, char* argv[])
   uint32_t inputsize;
   /* Program counter */
   uint32_t pc;
+  /* Program counter before modify */
+  uint32_t oldpc;
   /* Instruction register */
   uint32_t ir = 0;
   /* Instruction register stalled */
   uint32_t irstalled = 0;
   /* Flush flag */
   int flush = 0;
+  /* Flushed flag */
+  int flushed = 0;
   /* Stall flag */
   int stall = 0;
   /* Stalled flag */
@@ -92,6 +96,8 @@ int main(int argc, char* argv[])
 
   /* Instruction decode stage instruction */
   struct Inst instID;
+  /* Instruction decode stage data bus */
+  uint32_t dataID = 0;
   /* Instruction decode stage stalled instruction */
   struct Inst instIDstalled;
 
@@ -157,6 +163,7 @@ int main(int argc, char* argv[])
     /* Reset flags */
     stalled = stall ? 1 : 0;
     stall = 0;
+    flushed = flush ? 1 : 0;
     flush = 0;
     fwdIDfromEXDMrs = 0;
     fwdIDfromEXDMrt = 0;
@@ -212,7 +219,7 @@ int main(int argc, char* argv[])
 
     case JAL:
       /* Load $31 with PC + 4 */
-      reg[31] = pc + 4;
+      reg[31] = dataWB;
       break;
 
     case HALT:
@@ -418,9 +425,14 @@ int main(int argc, char* argv[])
 
     /* Execute instruction */
     if(stalled)
+    {
       instEX.instruction = NOP;
+    }
     else
+    {
       instEX = instID;
+      dataEX = dataID;
+    }
     /* Forward and execute control */
     switch(instEX.instruction)
     {
@@ -752,6 +764,8 @@ int main(int argc, char* argv[])
     /* Instruction decode */
     if(stalled)
       instID = instIDstalled;
+    else if(flushed)
+      instID.instruction = NOP;
     else
       decode(&instID, ir);
     /* Evaluate instructions with stall and flush */
@@ -861,10 +875,58 @@ int main(int argc, char* argv[])
       }
       break;
 
+      /* Jump instructions */
     case JR:
+      /* Check for stall condition */
+      if((isWriteToRdInst(instEX.instruction) &&
+          (instID.rs == instEX.rd && instID.rs != 0)) ||
+         (isWriteToRtInst(instEX.instruction) &&
+          (instID.rs == instEX.rt && instID.rs != 0)) ||
+         (isReadFromMemInst(instEX.instruction) &&
+          (instID.rs == instEX.rt && instID.rs != 0)) ||
+         (isReadFromMemInst(instDM.instruction) &&
+          (instID.rs == instDM.rt && instID.rs != 0)))
+      {
+        /* Stall the datapath */
+        stall = 1;
+      }
+      else
+      {
+        /* Check for forward conditions */
+        if(isWriteToRdInst(instDM.instruction) ||
+           isWriteToRtInst(instDM.instruction))
+        {
+          if(instID.rs != 0 &&
+	     (instID.rs == instDM.rd || instID.rs == instDM.rt))
+          {
+            /* Forward rs from EX-DM */
+            fwdIDfromEXDMrs = 1;
+          }
+        }
+        /* Write to program counter */
+        if(fwdIDfromEXDMrs)
+          pc = dataDM;
+        else
+          pc = reg[instID.rs];
+        /* Flush the instruction register */
+        flush = 1;
+      }
+      break;
+
     case J:
+      /* Do the jump */
+      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      /* Flush the instruction register */
+      flush = 1;
+      break;
+
     case JAL:
-      /* TODO: Jump instructions */
+      /* Pass program counter down the data path */
+      dataID = pc;
+      /* Do the jump */
+      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      /* Flush the instruction register */
+      flush = 1;
       break;
 
     default:
@@ -880,6 +942,8 @@ int main(int argc, char* argv[])
     /* Load instruction register */
     if(stalled)
       ir = irstalled;
+    else if(flush)
+      ir = imemory[oldpc/4];
     else
       ir = imemory[pc/4];
     /* Increment program counter */
@@ -887,6 +951,8 @@ int main(int argc, char* argv[])
       irstalled = ir;
     else if(!flush)
       pc = pc + 4;
+    /* Save pc in case of branching */
+    oldpc = pc;
 
     /* Print each stage */
     /* Print instruction register */
