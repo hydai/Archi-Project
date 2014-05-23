@@ -590,8 +590,8 @@ int main(int argc, char* argv[])
         }
       }
       op0 =
-        fwdEXfromEXDMrs ? dataDM :
-        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+        fwdEXfromEXDMrt ? dataDM :
+        fwdEXfromDMWBrt ? dataWB : reg[instEX.rt];
       op1 = instEX.c;
       /* Do actual operation */
       switch(instEX.instruction)
@@ -603,6 +603,7 @@ int main(int argc, char* argv[])
         dataEX = op0 >> op1;
         break;
       case SRA:
+        dataEX = op0;
         for(i = 0; i < instEX.c; i++)
         {
           dataEX = dataEX >> 1;
