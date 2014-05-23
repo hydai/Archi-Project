@@ -1018,7 +1018,7 @@ int main(int argc, char* argv[])
       fprintf(errordump, "Number overflow in cycle: %" PRIu32 "\n", cycle);
 
     /* Halt if address overflow or misalignment error occured */
-    if(addrOverflowError || numOverflowError)
+    if(addrOverflowError || alignError)
       quit = 1;
   }
 
