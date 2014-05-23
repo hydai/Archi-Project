@@ -62,7 +62,61 @@ ldRsc:  ;; Load rsc from memory
         addi    $t2,    $t2,    4
         addi    $t1,    $t1,    1
         bne     $a3,    $t1,    ldRsc
-        ;; TODO: recursize call merge sort and merge
+
+        ;; mergeSort(lsc, lscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        sw      $v0,    4($sp)
+        sw      $v1,    8($sp)
+        sw      $a0,    12($sp)
+        sw      $a1,    16($sp)
+        sw      $a2,    20($sp)
+        sw      $a3,    24($sp)
+        addi    $sp,    $sp,    28
+        add     $v0,    $a0,    $zero
+        add     $v1,    $a1,    $zero
+        jal     mgs
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -28
+        lw      $ra,    0($sp)
+        lw      $v0,    4($sp)
+        lw      $v1,    8($sp)
+        lw      $a0,    12($sp)
+        lw      $a1,    16($sp)
+        lw      $a2,    20($sp)
+        lw      $a3,    24($sp)
+
+        ;; mergeSort(rsc, rscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        sw      $v0,    4($sp)
+        sw      $v1,    8($sp)
+        sw      $a0,    12($sp)
+        sw      $a1,    16($sp)
+        sw      $a2,    20($sp)
+        sw      $a3,    24($sp)
+        addi    $sp,    $sp,    28
+        add     $v0,    $a2,    $zero
+        add     $v1,    $a3,    $zero
+        jal     mgs
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -28
+        lw      $ra,    0($sp)
+        lw      $v0,    4($sp)
+        lw      $v1,    8($sp)
+        lw      $a0,    12($sp)
+        lw      $a1,    16($sp)
+        lw      $a2,    20($sp)
+        lw      $a3,    24($sp)
+
+        ;; merge(arr, lsc, lscSize, rsc, rscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        addi    $sp,    $sp,    4
+        jal     mg
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -4
+        lw      $ra,    0($sp)
 
 mgsre:  ;; Return
         jr      $ra
