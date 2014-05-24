@@ -695,15 +695,12 @@ int main(int argc, char* argv[])
       }
       break;
 
-      /* rt depends on memory and rs */
+      /* rt depends on rs, calculate address */
     case LW:
     case LH:
     case LHU:
     case LB:
     case LBU:
-    case SW:
-    case SH:
-    case SB:
       /* Check forwarding condition */
       if(instEX.rs != 0)
       {
@@ -738,6 +735,81 @@ int main(int argc, char* argv[])
             /* Forward rs from DM-WB */
             fwdEXfromDMWBrs = 1;
           }
+        }
+      }
+      /* Check for number overflow */
+      if((getSign(sext16(instDM.c)) ==
+          getSign(reg[instDM.rs])) &&
+         (getSign(sext16(instDM.c)) !=
+          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      {
+        /* Number overflow */
+        numOverflowError = 1;
+      }
+      /* Get the operands */
+      op0 = sext16(instEX.c);
+      op1 =
+        fwdEXfromEXDMrs ? dataDM :
+        fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
+      /* Pass down the address */
+      dataEX = op0 + op1;
+      break;
+
+      /* memory depends on rs and rt, calculate address */
+    case SW:
+    case SH:
+    case SB:
+      /* Check forwarding condition */
+      if(isWriteToRdInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rd && instEX.rs != 0)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == instDM.rd && instEX.rt != 0)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      if(isWriteToRtInst(instDM.instruction))
+      {
+        if(instEX.rs == instDM.rt && instEX.rs != 0)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == instDM.rt && instEX.rt != 0)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
+      if(isWriteToRdInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rd && instEX.rs != 0)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == instWB.rd && instEX.rt != 0)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      if(isWriteToRtInst(instWB.instruction))
+      {
+        if(instEX.rs == instWB.rt && instEX.rs != 0)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == instWB.rt && instEX.rt != 0)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
         }
       }
       /* Check for number overflow */
@@ -916,7 +988,7 @@ int main(int argc, char* argv[])
 
     case J:
       /* Do the jump */
-      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      pc = (pc & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
       /* Flush the instruction register */
       flush = 1;
       break;
@@ -925,7 +997,7 @@ int main(int argc, char* argv[])
       /* Pass program counter down the data path */
       dataID = pc;
       /* Do the jump */
-      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      pc = (pc & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
       /* Flush the instruction register */
       flush = 1;
       break;
