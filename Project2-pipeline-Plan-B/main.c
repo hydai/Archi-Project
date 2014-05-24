@@ -670,7 +670,7 @@ int main(int argc, char* argv[])
       switch(instEX.instruction)
       {
       case ADDI:
-	op1 = sext16(op1);
+        op1 = sext16(op1);
         dataEX = op0 + op1;
         if(getSign(op0) == getSign(op1) &&
            getSign(op0) != getSign(dataEX))
@@ -689,7 +689,7 @@ int main(int argc, char* argv[])
         dataEX = ~(op0 | op1);
         break;
       case SLTI:
-	op1 = sext16(op1);
+        op1 = sext16(op1);
         dataEX = (int)op0 < (int)op1 ? 1 : 0;
         break;
 
@@ -904,16 +904,16 @@ int main(int argc, char* argv[])
     case BNE:
       if((isWriteToRdInst(instEX.instruction) &&
           ((instID.rs == instEX.rd && instID.rs != 0) ||
-	   (instID.rt == instEX.rd && instID.rt != 0))) ||
+           (instID.rt == instEX.rd && instID.rt != 0))) ||
          (isWriteToRtInst(instEX.instruction) &&
           ((instID.rs == instEX.rt && instID.rs != 0) ||
-	   (instID.rt == instEX.rt && instID.rt != 0))) ||
+           (instID.rt == instEX.rt && instID.rt != 0))) ||
          (isReadFromMemInst(instEX.instruction) &&
           ((instID.rs == instEX.rt && instID.rs != 0) ||
-	   (instID.rt == instEX.rt && instID.rt != 0))) ||
+           (instID.rt == instEX.rt && instID.rt != 0))) ||
          (isReadFromMemInst(instDM.instruction) &&
           ((instID.rs == instDM.rt && instID.rs != 0) ||
-	   (instID.rt == instDM.rt && instID.rt != 0))))
+           (instID.rt == instDM.rt && instID.rt != 0))))
       {
         /* Stall the datapath */
         stall = 1;
@@ -925,13 +925,13 @@ int main(int argc, char* argv[])
            isWriteToRtInst(instDM.instruction))
         {
           if(instID.rs != 0 &&
-	     (instID.rs == instDM.rd || instID.rs == instDM.rt))
+             (instID.rs == instDM.rd || instID.rs == instDM.rt))
           {
             /* Forward rs from EX-DM */
             fwdIDfromEXDMrs = 1;
           }
           if(instID.rt != 0 &&
-	     (instID.rt == instDM.rd || instID.rt == instDM.rt))
+             (instID.rt == instDM.rd || instID.rt == instDM.rt))
           {
             /* Forward rt from EX-DM */
             fwdIDfromEXDMrt = 1;
