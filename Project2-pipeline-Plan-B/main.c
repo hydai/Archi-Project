@@ -916,7 +916,7 @@ int main(int argc, char* argv[])
 
     case J:
       /* Do the jump */
-      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      pc = (pc & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
       /* Flush the instruction register */
       flush = 1;
       break;
@@ -925,7 +925,7 @@ int main(int argc, char* argv[])
       /* Pass program counter down the data path */
       dataID = pc;
       /* Do the jump */
-      pc = ((pc+4) & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
+      pc = (pc & 0xF0000000) | ((instID.c << 2) & 0x0FFFFFFC);
       /* Flush the instruction register */
       flush = 1;
       break;
