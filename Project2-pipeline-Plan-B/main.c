@@ -921,17 +921,27 @@ int main(int argc, char* argv[])
       else
       {
         /* Check for forward conditions */
-        if(isWriteToRdInst(instDM.instruction) ||
-           isWriteToRtInst(instDM.instruction))
+        if(isWriteToRdInst(instDM.instruction))
         {
-          if(instID.rs != 0 &&
-             (instID.rs == instDM.rd || instID.rs == instDM.rt))
+          if(instID.rs != 0 && instID.rs == instDM.rd)
           {
             /* Forward rs from EX-DM */
             fwdIDfromEXDMrs = 1;
           }
-          if(instID.rt != 0 &&
-             (instID.rt == instDM.rd || instID.rt == instDM.rt))
+          if(instID.rt != 0 && instID.rt == instDM.rd)
+          {
+            /* Forward rt from EX-DM */
+            fwdIDfromEXDMrt = 1;
+          }
+        }
+        if(isWriteToRtInst(instDM.instruction))
+        {
+          if(instID.rs != 0 && instID.rs == instDM.rt)
+          {
+            /* Forward rs from EX-DM */
+            fwdIDfromEXDMrs = 1;
+          }
+          if(instID.rt != 0 && instID.rt == instDM.rt)
           {
             /* Forward rt from EX-DM */
             fwdIDfromEXDMrt = 1;
