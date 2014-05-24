@@ -37,7 +37,7 @@ void mergeSort(int arr[], int arrSize) {
     }
     mergeSort(lsc, lscSize);
     mergeSort(rsc, rscSize);
-    merge(arr, arrSize, lsc, lscSize, rsc, rscSize);
+    merge(arr, lsc, lscSize, rsc, rscSize);
 }
 
 void merge(int arr[], int lsc[], int lscSize, int rsc[], int rscSize) {
@@ -49,7 +49,7 @@ void merge(int arr[], int lsc[], int lscSize, int rsc[], int rscSize) {
             lct++;
         } else {
             arr[dstct] = rsc[rct];
-            inversionPair += (arr[dstct]<<10);
+            inversionPair += (lscSize-lct);
             dstct++;
             rct++;
         }
