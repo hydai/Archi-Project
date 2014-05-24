@@ -853,6 +853,10 @@ int main(int argc, char* argv[])
     case NOR:
     case NAND:
     case SLT:
+      /* memory depends on rs and rt */
+    case SW:
+    case SH:
+    case SB:
       if(isReadFromMemInst(instEX.instruction))
       {
         if(instID.rs == instEX.rt && instID.rs != 0)
@@ -879,6 +883,11 @@ int main(int argc, char* argv[])
     case ORI:
     case NORI:
     case SLTI:
+    case LW:
+    case LH:
+    case LHU:
+    case LB:
+    case LBU:
       if(isReadFromMemInst(instEX.instruction))
       {
         if(instID.rs == instEX.rt && instID.rs != 0)
