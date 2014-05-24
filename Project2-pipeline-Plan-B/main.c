@@ -742,10 +742,10 @@ int main(int argc, char* argv[])
         }
       }
       /* Check for number overflow */
-      if((getSign(sext16(instDM.c)) ==
-          getSign(reg[instDM.rs])) &&
-         (getSign(sext16(instDM.c)) !=
-          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      if((getSign(sext16(instEX.c)) ==
+          getSign(reg[instEX.rs])) &&
+         (getSign(sext16(instEX.c)) !=
+          getSign(sext16(instEX.c) + reg[instEX.rs])))
       {
         /* Number overflow */
         numOverflowError = 1;
@@ -817,10 +817,10 @@ int main(int argc, char* argv[])
         }
       }
       /* Check for number overflow */
-      if((getSign(sext16(instDM.c)) ==
-          getSign(reg[instDM.rs])) &&
-         (getSign(sext16(instDM.c)) !=
-          getSign(sext16(instDM.c) + reg[instDM.rs])))
+      if((getSign(sext16(instEX.c)) ==
+          getSign(reg[instEX.rs])) &&
+         (getSign(sext16(instEX.c)) !=
+          getSign(sext16(instEX.c) + reg[instEX.rs])))
       {
         /* Number overflow */
         numOverflowError = 1;
