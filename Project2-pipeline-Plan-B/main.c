@@ -475,6 +475,19 @@ int main(int argc, char* argv[])
           fwdEXfromEXDMrt = 1;
         }
       }
+      if(instDM.instruction == JAL)
+      {
+        if(instEX.rs == 31)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == 31)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
       if(isWriteToRdInst(instWB.instruction))
       {
         if(instEX.rs == instWB.rd && instEX.rs != 0)
@@ -496,6 +509,19 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrs = 1;
         }
         if(instEX.rt == instWB.rt && instEX.rt != 0)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      if(instWB.instruction == JAL)
+      {
+        if(instEX.rs == 31)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == 31)
         {
           /* Forward rt from DM-WB */
           fwdEXfromDMWBrt = 1;
@@ -572,8 +598,16 @@ int main(int argc, char* argv[])
         {
           if(instEX.rt == instDM.rt)
           {
-          /* Forward rt from EX-DM */
-          fwdEXfromEXDMrt = 1;
+            /* Forward rt from EX-DM */
+            fwdEXfromEXDMrt = 1;
+          }
+        }
+        if(instDM.instruction == JAL)
+        {
+          if(instEX.rt == 31)
+          {
+            /* Forward rt from EX-DM */
+            fwdEXfromEXDMrt = 1;
           }
         }
         if(isWriteToRdInst(instWB.instruction))
@@ -589,6 +623,14 @@ int main(int argc, char* argv[])
           if(instEX.rt == instWB.rt)
           {
           /* Forward rt from DM-WB */
+            fwdEXfromDMWBrt = 1;
+          }
+        }
+        if(instWB.instruction == JAL)
+        {
+          if(instEX.rt == 31)
+          {
+            /* Forward rt from EX-DM */
             fwdEXfromDMWBrt = 1;
           }
         }
@@ -645,6 +687,14 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
+        if(instDM.instruction == JAL)
+        {
+          if(instEX.rs == 31)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
+        }
         if(isWriteToRdInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rd)
@@ -656,6 +706,14 @@ int main(int argc, char* argv[])
         if(isWriteToRtInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rt)
+          {
+            /* Forward rs from DM-WB */
+            fwdEXfromDMWBrs = 1;
+          }
+        }
+        if(instWB.instruction == JAL)
+        {
+          if(instEX.rs == 31)
           {
             /* Forward rs from DM-WB */
             fwdEXfromDMWBrs = 1;
@@ -724,6 +782,14 @@ int main(int argc, char* argv[])
             fwdEXfromEXDMrs = 1;
           }
         }
+        if(instDM.instruction == JAL)
+        {
+          if(instEX.rs == 31)
+          {
+            /* Forward rs from EX-DM */
+            fwdEXfromEXDMrs = 1;
+          }
+        }
         if(isWriteToRdInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rd)
@@ -735,6 +801,14 @@ int main(int argc, char* argv[])
         if(isWriteToRtInst(instWB.instruction))
         {
           if(instEX.rs == instWB.rt)
+          {
+            /* Forward rs from DM-WB */
+            fwdEXfromDMWBrs = 1;
+          }
+        }
+        if(instDM.instruction == JAL)
+        {
+          if(instEX.rs == 31)
           {
             /* Forward rs from DM-WB */
             fwdEXfromDMWBrs = 1;
@@ -790,6 +864,19 @@ int main(int argc, char* argv[])
           fwdEXfromEXDMrt = 1;
         }
       }
+      if(instDM.instruction == JAL)
+      {
+        if(instEX.rs == 31)
+        {
+          /* Forward rs from EX-DM */
+          fwdEXfromEXDMrs = 1;
+        }
+        if(instEX.rt == 31)
+        {
+          /* Forward rt from EX-DM */
+          fwdEXfromEXDMrt = 1;
+        }
+      }
       if(isWriteToRdInst(instWB.instruction))
       {
         if(instEX.rs == instWB.rd && instEX.rs != 0)
@@ -811,6 +898,19 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrs = 1;
         }
         if(instEX.rt == instWB.rt && instEX.rt != 0)
+        {
+          /* Forward rt from DM-WB */
+          fwdEXfromDMWBrt = 1;
+        }
+      }
+      if(instWB.instruction == JAL)
+      {
+        if(instEX.rs == 31)
+        {
+          /* Forward rs from DM-WB */
+          fwdEXfromDMWBrs = 1;
+        }
+        if(instEX.rt == 31)
         {
           /* Forward rt from DM-WB */
           fwdEXfromDMWBrt = 1;
@@ -913,7 +1013,9 @@ int main(int argc, char* argv[])
            (instID.rt == instEX.rt && instID.rt != 0))) ||
          (isReadFromMemInst(instDM.instruction) &&
           ((instID.rs == instDM.rt && instID.rs != 0) ||
-           (instID.rt == instDM.rt && instID.rt != 0))))
+           (instID.rt == instDM.rt && instID.rt != 0))) ||
+         ((instEX.instruction == JAL) &&
+          ((instID.rs == 31) || instID.rt == 31)))
       {
         /* Stall the datapath */
         stall = 1;
@@ -942,6 +1044,19 @@ int main(int argc, char* argv[])
             fwdIDfromEXDMrs = 1;
           }
           if(instID.rt != 0 && instID.rt == instDM.rt)
+          {
+            /* Forward rt from EX-DM */
+            fwdIDfromEXDMrt = 1;
+          }
+        }
+        if(instDM.instruction == JAL)
+        {
+          if(instID.rs == 31)
+          {
+            /* Forward rs from EX-DM */
+            fwdIDfromEXDMrs = 1;
+          }
+          if(instID.rt == 31)
           {
             /* Forward rt from EX-DM */
             fwdIDfromEXDMrt = 1;
@@ -981,7 +1096,8 @@ int main(int argc, char* argv[])
          (isReadFromMemInst(instEX.instruction) &&
           (instID.rs == instEX.rt && instID.rs != 0)) ||
          (isReadFromMemInst(instDM.instruction) &&
-          (instID.rs == instDM.rt && instID.rs != 0)))
+          (instID.rs == instDM.rt && instID.rs != 0)) ||
+         (instEX.instruction == JAL && instID.rs == 31))
       {
         /* Stall the datapath */
         stall = 1;
@@ -993,11 +1109,16 @@ int main(int argc, char* argv[])
            isWriteToRtInst(instDM.instruction))
         {
           if(instID.rs != 0 &&
-	     (instID.rs == instDM.rd || instID.rs == instDM.rt))
+             (instID.rs == instDM.rd || instID.rs == instDM.rt))
           {
             /* Forward rs from EX-DM */
             fwdIDfromEXDMrs = 1;
           }
+        }
+        if(instDM.instruction == JAL && instID.rs == 31)
+        {
+          /* Forward rs from EX-DM */
+          fwdIDfromEXDMrs = 1;
         }
         /* Write to program counter */
         if(fwdIDfromEXDMrs)
