@@ -25,7 +25,12 @@ init:   ;; Initialize
         add     $v0,    $at,    $at     ;; Set $v0 as array address
         addi    $v1,    $v0,    32      ;; Set $v1 as array size
         jal     mgs
-        j       exit                    ;; Goto exit
+        j       JJ1
+JJ1:    j       JJ2
+JJ2:    j       JJ3
+JJ3:    j       JJ4
+JJ4:    j       JJ5
+JJ5:    j       exit                    ;; Goto exit
 
 mgs:    ;; Merge sort divide part
         beq     $v1,    $gp,    mgsre   ;; Check size of array <= 1 or not
@@ -62,13 +67,137 @@ ldRsc:  ;; Load rsc from memory
         addi    $t2,    $t2,    4
         addi    $t1,    $t1,    1
         bne     $a3,    $t1,    ldRsc
-        ;; TODO: recursize call merge sort and merge
+
+        ;; mergeSort(lsc, lscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        sw      $v0,    4($sp)
+        sw      $v1,    8($sp)
+        sw      $a0,    12($sp)
+        sw      $a1,    16($sp)
+        sw      $a2,    20($sp)
+        sw      $a3,    24($sp)
+        addi    $sp,    $sp,    28
+        add     $v0,    $a0,    $zero
+        add     $v1,    $a1,    $zero
+        jal     mgs
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -28
+        lw      $ra,    0($sp)
+        lw      $v0,    4($sp)
+        lw      $v1,    8($sp)
+        lw      $a0,    12($sp)
+        lw      $a1,    16($sp)
+        lw      $a2,    20($sp)
+        lw      $a3,    24($sp)
+
+        ;; mergeSort(rsc, rscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        sw      $v0,    4($sp)
+        sw      $v1,    8($sp)
+        sw      $a0,    12($sp)
+        sw      $a1,    16($sp)
+        sw      $a2,    20($sp)
+        sw      $a3,    24($sp)
+        addi    $sp,    $sp,    28
+        add     $v0,    $a2,    $zero
+        add     $v1,    $a3,    $zero
+        jal     mgs
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -28
+        lw      $ra,    0($sp)
+        lw      $v0,    4($sp)
+        lw      $v1,    8($sp)
+        lw      $a0,    12($sp)
+        lw      $a1,    16($sp)
+        lw      $a2,    20($sp)
+        lw      $a3,    24($sp)
+
+        ;; merge(arr, lsc, lscSize, rsc, rscSize);
+        ;; Push status to stack
+        sw      $ra,    0($sp)
+        addi    $sp,    $sp,    4
+        jal     mg
+        ;; Pop status from stack
+        addi    $sp,    $sp,    -4
+        lw      $ra,    0($sp)
 
 mgsre:  ;; Return
         jr      $ra
 
 mg:     ;; Merge conquer part
-        ;; TODO: merge
+        ;; init lct, rct, dstct
+        add     $t1,    $zero,  $zero
+        add     $t2,    $zero,  $zero
+        add     $t3,    $zero,  $zero
+
+mglr:   ;; lct < lscSize && rct < rscSize
+        slt     $s0,    $t1,    $a1
+        slt     $s1,    $t2,    $a3
+        add     $s2,    $s0,    $s1
+        addi    $s2,    $s2,    -2
+        bne     $s2,    $zero,  mgl
+        ;; lsc[lct] < rsc[rct]
+        add     $t4,    $a0,    $zero
+        add     $t7,    $t1,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        lw      $s6,    0($t4)          ;; $s6 = lsc[lct]
+        add     $t4,    $a2,    $zero
+        add     $t7,    $t2,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        lw      $s7,    0($t4)          ;; $s7 = rsc[rct]
+        slt     $s2,    $s6,    $s7
+        bne     $s2,    $zero,  LE
+        ;; merge l < r
+        add     $t4,    $v0,    $zero
+        add     $t7,    $t3,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        sw      $s7,    0($t4)          ;; dst[dstct] = $s7
+        ;; count inversion pair
+        sub     $t5,    $a1,    $t1
+        add     $at,    $t5,    $at
+        addi    $t3,    $t3,    1       ;; dstct++
+        addi    $t2,    $t2,    1       ;; rct++
+        j       mglr
+
+LE:     ;; lsc[lct] >= rsc[rct]
+        ;; merge l >= r
+        add     $t4,    $v0,    $zero
+        add     $t7,    $t3,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        sw      $s6,    0($t4)          ;; dst[dstct] = $s6
+        addi    $t3,    $t3,    1       ;; dstct++
+        addi    $t1,    $t1,    1       ;; lct++
+        j       mglr
+mgl:    ;; while (lct < lscSize) {...}
+        slt     $s0,    $t1,    $a1
+        beq     $s0,    $zero,  mgr
+        add     $t4,    $v0,    $zero
+        add     $t7,    $t3,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        sw      $s6,    0($t4)          ;; dst[dstct] = $s6
+        addi    $t3,    $t3,    1       ;; dstct++
+        addi    $t1,    $t1,    1       ;; lct++
+        j       mgl
+mgr:    ;; while (rct < rscSize) {...}
+        slt     $s0,    $t2,    $a3
+        beq     $s0,    $zero,  mgre
+        add     $t4,    $v0,    $zero
+        add     $t7,    $t3,    $zero
+        sll     $t7,    $t7,    2
+        add     $t4,    $t4,    $t7
+        sw      $s7,    0($t4)          ;; dst[dstct] = $s7
+        addi    $t3,    $t3,    1       ;; dstct++
+        addi    $t2,    $t2,    1       ;; rct++
+        j       mgr
+mgre:   ;; merge return
+        jr      $ra
 
 exit:   ;; Exit pointer
         halt
