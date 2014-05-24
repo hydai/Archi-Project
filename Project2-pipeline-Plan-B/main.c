@@ -436,6 +436,10 @@ int main(int argc, char* argv[])
     /* Forward and execute control */
     switch(instEX.instruction)
     {
+      /* lui has no dependency */
+    case LUI:
+      dataEX = instEX.c << 16;
+      break;
       /* rd depends on rs and rt */
     case ADD:
     case SUB:
