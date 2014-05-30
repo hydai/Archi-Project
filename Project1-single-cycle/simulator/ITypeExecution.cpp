@@ -253,7 +253,7 @@ namespace Simulator {
         // Check if the location is in middle. If yes, shift it.
         if ((base + offset) % 4 != 0) {
             tmp = tmp & 0x0000FFFF;
-            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0xFFFF0000);
+            dmemory[(base+offset)/4] = tmp | ((reg[instr.rt] & 0x0000FFFF) << 16);
         }
         else {
             tmp = tmp & 0xFFFF0000;
@@ -288,15 +288,15 @@ namespace Simulator {
         }
         else if ((base + offset) % 4 == 1) {
             tmp = tmp & 0xFFFF00FF;
-            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x0000FF00);
+            dmemory[(base+offset)/4] = tmp | ((reg[instr.rt] & 0x000000FF) << 8);
         }
         else if ((base + offset) % 4 == 2) {
             tmp = tmp & 0xFF00FFFF;
-            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0x00FF0000);
+            dmemory[(base+offset)/4] = tmp | ((reg[instr.rt] & 0x000000FF) << 16);
         }
         else if ((base + offset) % 4 == 3) {
             tmp = tmp & 0x00FFFFFF;
-            dmemory[(base+offset)/4] = tmp | (reg[instr.rt] & 0xFF000000);
+            dmemory[(base+offset)/4] = tmp | ((reg[instr.rt] & 0x000000FF) << 24);
         }
     }
 
