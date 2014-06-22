@@ -1105,15 +1105,13 @@ int main(int argc, char* argv[])
       else
       {
         /* Check for forward conditions */
-        if(isWriteToRdInst(instDM.instruction) ||
-           isWriteToRtInst(instDM.instruction))
+        if((isWriteToRdInst(instDM.instruction) &&
+            (instID.rs == instDM.rd && instID.rs != 0)) ||
+           (isWriteToRtInst(instDM.instruction) &&
+            (instID.rs == instDM.rt && instID.rs != 0)))
         {
-          if(instID.rs != 0 &&
-             (instID.rs == instDM.rd || instID.rs == instDM.rt))
-          {
-            /* Forward rs from EX-DM */
-            fwdIDfromEXDMrs = 1;
-          }
+          /* Forward rs from EX-DM */
+          fwdIDfromEXDMrs = 1;
         }
         if(instDM.instruction == JAL && instID.rs == 31)
         {
