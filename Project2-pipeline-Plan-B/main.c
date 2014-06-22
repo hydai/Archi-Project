@@ -806,7 +806,7 @@ int main(int argc, char* argv[])
             fwdEXfromDMWBrs = 1;
           }
         }
-        if(instDM.instruction == JAL)
+        if(instWB.instruction == JAL)
         {
           if(instEX.rs == 31)
           {
