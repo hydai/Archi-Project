@@ -806,7 +806,7 @@ int main(int argc, char* argv[])
             fwdEXfromDMWBrs = 1;
           }
         }
-        if(instDM.instruction == JAL)
+        if(instWB.instruction == JAL)
         {
           if(instEX.rs == 31)
           {
@@ -815,15 +815,6 @@ int main(int argc, char* argv[])
           }
         }
       }
-      /* Check for number overflow */
-      if((getSign(sext16(instEX.c)) ==
-          getSign(reg[instEX.rs])) &&
-         (getSign(sext16(instEX.c)) !=
-          getSign(sext16(instEX.c) + reg[instEX.rs])))
-      {
-        /* Number overflow */
-        numOverflowError = 1;
-      }
       /* Get the operands */
       op0 = sext16(instEX.c);
       op1 =
@@ -831,6 +822,13 @@ int main(int argc, char* argv[])
         fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
       /* Pass down the address */
       dataEX = op0 + op1;
+      /* Check for number overflow */
+      if(getSign(op0) == getSign(op1) &&
+         getSign(op0) != getSign(dataEX))
+      {
+        /* Overflow */
+        numOverflowError = 1;
+      }
       break;
 
       /* memory depends on rs and rt, calculate address */
@@ -916,15 +914,6 @@ int main(int argc, char* argv[])
           fwdEXfromDMWBrt = 1;
         }
       }
-      /* Check for number overflow */
-      if((getSign(sext16(instEX.c)) ==
-          getSign(reg[instEX.rs])) &&
-         (getSign(sext16(instEX.c)) !=
-          getSign(sext16(instEX.c) + reg[instEX.rs])))
-      {
-        /* Number overflow */
-        numOverflowError = 1;
-      }
       /* Get the operands */
       op0 = sext16(instEX.c);
       op1 =
@@ -932,6 +921,13 @@ int main(int argc, char* argv[])
         fwdEXfromDMWBrs ? dataWB : reg[instEX.rs];
       /* Pass down the address */
       dataEX = op0 + op1;
+      /* Check for number overflow */
+      if(getSign(op0) == getSign(op1) &&
+         getSign(op0) != getSign(dataEX))
+      {
+        /* Overflow */
+        numOverflowError = 1;
+      }
       break;
 
     default:
@@ -1105,15 +1101,13 @@ int main(int argc, char* argv[])
       else
       {
         /* Check for forward conditions */
-        if(isWriteToRdInst(instDM.instruction) ||
-           isWriteToRtInst(instDM.instruction))
+        if((isWriteToRdInst(instDM.instruction) &&
+            (instID.rs == instDM.rd && instID.rs != 0)) ||
+           (isWriteToRtInst(instDM.instruction) &&
+            (instID.rs == instDM.rt && instID.rs != 0)))
         {
-          if(instID.rs != 0 &&
-             (instID.rs == instDM.rd || instID.rs == instDM.rt))
-          {
-            /* Forward rs from EX-DM */
-            fwdIDfromEXDMrs = 1;
-          }
+          /* Forward rs from EX-DM */
+          fwdIDfromEXDMrs = 1;
         }
         if(instDM.instruction == JAL && instID.rs == 31)
         {
