@@ -56,6 +56,7 @@ namespace Simulator {
     class Simulator {
         public:
             Simulator();
+            Simulator(int, int, int, int, int, int, int, int, int, int);
             ~Simulator();
             void run();
         private:
@@ -65,12 +66,13 @@ namespace Simulator {
             uint_32t_word pc;
             uint_32t_word cycleCounter;
             uint_32t_word runtimeStatus;
-            FILE *iimage, *dimage, *errordump, *snapshot;
+            FILE *iimage, *dimage, *errordump, *snapshot, *fptr_report;
             void init();
             bool loadData();
             void loadIimage();
             void loadDimage();
             void dump();
+            void report();
             uint_32t_word fetch();
             instruction decode(uint_32t_word);
             char getInstructionType(uint_32t_word);

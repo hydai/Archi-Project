@@ -1,5 +1,5 @@
 SIMULATOR = simulator
-TARGET = single_cycle
+TARGET = CMP
 SOURCE = main.cpp \
 		 simulator.cpp \
 		 execute.cpp RTypeExecution.cpp ITypeExecution.cpp JTypeExecution.cpp \

@@ -1,6 +1,20 @@
 #include "simulator.h"
 
 namespace Simulator {
+    Simulator::Simulator(
+      int IMSIZE,       // I memory size
+      int DMSIZE,       // D memory size
+      int IPGSIZE,      // Page size of I memory
+      int DPGSIZE,      // Page size of D memory
+      int ICTSIZE,      // Total size of I cache
+      int ICBSIZE,      // Block size of I cache
+      int ICSA,         // Set associativity of I cache
+      int DCTSIZE,      // Total size of D cache
+      int DCBSIZE,      // Block size of D cache
+      int DCSA          // Set associativity of D cache
+      ) {
+        // TODO;
+    }
     Simulator::Simulator() {
         this->init();
         this->loadData();
@@ -23,6 +37,7 @@ namespace Simulator {
         dimage = fopen("dimage.bin", "r");
         errordump = fopen("error_dump.rpt", "w");
         snapshot = fopen("snapshot.rpt", "w");
+        fptr_report = fopen("report.rpt", "w");
         if (iimage == NULL || dimage == NULL) {
             printf("Cannot open iimage.bin or dimage.bin\n");
             return false;
@@ -64,6 +79,26 @@ namespace Simulator {
         }
         fprintf(snapshot, "PC: 0x%08X\n", pc);
         fprintf(snapshot, "\n\n");
+    }
+    void Simulator::report() {
+        fprintf( fptr_report, "ICache :\n");
+        fprintf( fptr_report, "# hits: %u\n", ICache.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", ICache.misses );
+        fprintf( fptr_report, "DCache :\n");
+        fprintf( fptr_report, "# hits: %u\n", DCache.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", DCache.misses );
+        fprintf( fptr_report, "ITLB :\n");
+        fprintf( fptr_report, "# hits: %u\n", ITLB.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", ITLB.misses );
+        fprintf( fptr_report, "DTLB :\n");
+        fprintf( fptr_report, "# hits: %u\n", DTLB.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", DTLB.misses );
+        fprintf( fptr_report, "IPageTable :\n");
+        fprintf( fptr_report, "# hits: %u\n", IPageTable.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", IPageTable.misses );
+        fprintf( fptr_report, "DPageTable :\n");
+        fprintf( fptr_report, "# hits: %u\n", DPageTable.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", DPageTable.misses );
     }
     void Simulator::run() {
         while (true) {
