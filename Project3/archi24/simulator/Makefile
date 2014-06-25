@@ -1,7 +1,7 @@
 SIMULATOR = simulator
 TARGET = CMP
 SOURCE = main.cpp \
-		 simulator.cpp \
+		 simulator.cpp report.cpp \
 		 execute.cpp RTypeExecution.cpp ITypeExecution.cpp JTypeExecution.cpp \
 		 decode.cpp
 CC = clang++

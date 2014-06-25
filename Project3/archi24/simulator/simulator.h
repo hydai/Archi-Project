@@ -54,7 +54,8 @@ namespace Simulator {
         uint_32t_word ci, cs, ca;
     };
     struct _PAGE {
-        int space[256];
+        bool valid;
+        uint_32t_word space[256];
         int LRU;
     };
     struct _MEMORY {
@@ -76,6 +77,7 @@ namespace Simulator {
         bool valid;
         int ppn;
         int LRU;
+        uint_32t_word vpn;
     };
     struct _TLB {
         int hits, misses;
@@ -117,11 +119,15 @@ namespace Simulator {
             int findDTLBPPN(uint_32t_word);
             void updateITLBPPN(uint_32t_word, int);
             void updateDTLBPPN(uint_32t_word, int);
+            void updateIPTEPPN(uint_32t_word, int);
+            void updateDPTEPPN(uint_32t_word, int);
             int insertIMEM(uint_32t_word);
             int insertDMEM(uint_32t_word);
             void queryICACHE(uint_32t_word, int);
             void queryDCACHE(uint_32t_word, int);
+            uint_32t_word getVPN(uint_32t_word, int);
 
+            int LRUct;
             void dump();
             void report();
             uint_32t_word fetch();
