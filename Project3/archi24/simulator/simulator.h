@@ -66,7 +66,7 @@ namespace Simulator {
     struct _BLOCK {
         bool valid;
         int tag, ind, off;
-        int LRU;
+        int LRU, ppn;
         uint_32t_word space;
     };
     struct _CACHE {

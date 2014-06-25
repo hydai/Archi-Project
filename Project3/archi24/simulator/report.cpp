@@ -260,6 +260,13 @@ namespace Simulator {
                     DPTE.ppn[i].valid = false;
                 }
             }
+            for (int i = 0; i < DCACHE.totalSize/DCACHE.blockSize/DCACHE.setAssociativity; i++) {
+                for (int j = 0; j < DCACHE.setAssociativity; j++) {
+                    if (DCACHE.block[i][j].ppn == PPN) {
+                        DCACHE.block[i][j].valid = false;
+                    }
+                }
+            }
             DMEM.page[PPN].valid = true;
             for (int i = 0; i < DMEM.pageSize/4; i++) {
                 DMEM.page[PPN].space[i] = VA+i*4;
@@ -348,6 +355,7 @@ namespace Simulator {
                 ICACHE.block[ind][hit].valid = true;
                 ICACHE.block[ind][hit].tag = tag;
                 ICACHE.block[ind][hit].LRU = LRUct++;
+                ICACHE.block[ind][hit].ppn = PPN;
             } else {
                 int LLRU = 2147483647;
                 for (int i = 0; i < ICACHE.setAssociativity; i++) {
@@ -358,6 +366,7 @@ namespace Simulator {
                 }
                 ICACHE.block[ind][hit].valid = true;
                 ICACHE.block[ind][hit].tag = tag;
+                ICACHE.block[ind][hit].ppn = PPN;
                 ICACHE.block[ind][hit].LRU = LRUct++;
             }
         }
@@ -386,6 +395,7 @@ namespace Simulator {
                 DCACHE.block[ind][hit].valid = true;
                 DCACHE.block[ind][hit].tag = tag;
                 DCACHE.block[ind][hit].LRU = LRUct++;
+                DCACHE.block[ind][hit].ppn = PPN;
             } else {
                 int LLRU = 2147483647;
                 for (int i = 0; i < DCACHE.setAssociativity; i++) {
@@ -397,6 +407,7 @@ namespace Simulator {
                 DCACHE.block[ind][hit].valid = true;
                 DCACHE.block[ind][hit].tag = tag;
                 DCACHE.block[ind][hit].LRU = LRUct++;
+                DCACHE.block[ind][hit].ppn = PPN;
             }
         }
     }
