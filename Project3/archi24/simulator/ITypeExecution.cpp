@@ -106,6 +106,7 @@ namespace Simulator {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
+        read((base+offset), 1);
         // Check if the location is in middle. If yes, shift it.
         if ((base + offset) % 4 != 0) {
             tmp = tmp >> 16;
@@ -136,6 +137,7 @@ namespace Simulator {
         }
 
         uint_32t_word tmp = dmemory[(base+offset)/4];
+        read((base+offset), 1);
         // Check wanted position
         if ((base + offset) % 4 == 0) {
             tmp = tmp & 0x000000FF;
@@ -177,6 +179,7 @@ namespace Simulator {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
+        read((base+offset), 1);
         // Check wanted position
         if ((base + offset) % 4 == 0) {
             tmp = tmp & 0x000000FF;
@@ -221,7 +224,7 @@ namespace Simulator {
             return;
         }
         dmemory[(base+offset)/4] = reg[instr.rt];
-        
+        write((base+offset), 1);
     }
 
     void Simulator::_sh(instruction instr) {
@@ -250,6 +253,7 @@ namespace Simulator {
         }
 
         uint_32t_word tmp = dmemory[(base+offset)/4];
+        write((base+offset), 1);
         // Check if the location is in middle. If yes, shift it.
         if ((base + offset) % 4 != 0) {
             tmp = tmp & 0x0000FFFF;
@@ -281,6 +285,7 @@ namespace Simulator {
             return;
         }
         uint_32t_word tmp = dmemory[(base+offset)/4];
+        write((base+offset), 1);
         // Check wanted location.
         if ((base + offset) % 4 == 0) {
             tmp = tmp & 0xFFFFFF00;
@@ -327,6 +332,7 @@ namespace Simulator {
             return;
         }
         reg[instr.rt] = dmemory[(base+offset)/4];
+        read((base+offset), 1);
     }
 
     void Simulator::_lhu(instruction instr) {
@@ -362,6 +368,7 @@ namespace Simulator {
             tmp = tmp >> 16;
         }
         reg[instr.rt] = (tmp & 0x0000FFFF);
+        read((base+offset), 1);
     }
     void Simulator::_slti(instruction instr) {
         // Check for writing to $0

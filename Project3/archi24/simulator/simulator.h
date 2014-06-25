@@ -109,8 +109,19 @@ namespace Simulator {
             bool loadData();
             void loadIimage();
             void loadDimage();
-            void read(uint_32t_word);
-            void write(uint_32t_word);
+            void read(uint_32t_word, int);
+            void write(uint_32t_word, int);
+            int findIPTEPPN(uint_32t_word);
+            int findDPTEPPN(uint_32t_word);
+            int findITLBPPN(uint_32t_word);
+            int findDTLBPPN(uint_32t_word);
+            void updateITLBPPN(uint_32t_word, int);
+            void updateDTLBPPN(uint_32t_word, int);
+            int insertIMEM(uint_32t_word);
+            int insertDMEM(uint_32t_word);
+            void queryICACHE(uint_32t_word, int);
+            void queryDCACHE(uint_32t_word, int);
+
             void dump();
             void report();
             uint_32t_word fetch();

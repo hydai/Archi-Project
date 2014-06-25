@@ -155,6 +155,7 @@ namespace Simulator {
             // dump status
             this->dump();
             // fetch opcode
+            read(pc, 0);
             currentInstruction = this->fetch();
             if (runtimeStatus == STATUS_HALT) {
                 break;
@@ -170,6 +171,101 @@ namespace Simulator {
         }
         this->report();
     }
+    
+    // ==========================
+    // mode:
+    //      0 => I
+    //      1 => D
+    void Simulator::read(uint_32t_word VA, int mode) {
+        if (mode == 0) {
+            // read for I
+            int pageOffsetBits = 0, tmp;
+            tmp = IMEM.pageSize-1;
+            while (tmp) {
+                pageOffsetBits++;
+                tmp /= 2;
+            }
+            uint_32t_word VPN = VA >> pageOffsetBits;
+            int PPN = findITLBPPN(VPN);
+            if (PPN != -1) {
+                ITLB.hits++;
+            } else {
+                ITLB.misses++;
+                PPN = findIPTEPPN(VPN);
+                if (PPN != -1) {
+                    IPTE.hits++;
+                    updateITLBPPN(VPN, PPN);
+                } else {
+                    IPTE.misses++;
+                    PPN = insertIMEM(VA);
+                }
+            }
+            queryICACHE(VA, PPN);
+        } else {
+            // read for D
+            int pageOffsetBits = 0, tmp;
+            tmp = DMEM.pageSize-1;
+            while (tmp) {
+                pageOffsetBits++;
+                tmp /= 2;
+            }
+            uint_32t_word VPN = VA >> pageOffsetBits;
+            int PPN = findDTLBPPN(VPN);
+            if (PPN != -1) {
+                DTLB.hits++;
+            } else {
+                DTLB.misses++;
+                PPN = findDPTEPPN(VPN);
+                if (PPN != -1) {
+                    DPTE.hits++;
+                    updateDTLBPPN(VPN, PPN);
+                } else {
+                    DPTE.misses++;
+                    PPN = insertDMEM(VA);
+                }
+            }
+            queryDCACHE(VA, PPN);
+        }
+    }
+    int Simulator::findIPTEPPN(uint_32t_word VPN) {
+        return -1;
+    }
+    int Simulator::findDPTEPPN(uint_32t_word VPN) {
+        return -1;
+    }
+    int Simulator::findITLBPPN(uint_32t_word VPN) {
+        return -1;
+    }
+    int Simulator::findDTLBPPN(uint_32t_word VPN) {
+        return -1;
+    }
+    void Simulator::updateITLBPPN(uint_32t_word VPN, int PPN) {
+    
+    }
+    void Simulator::updateDTLBPPN(uint_32t_word VPN, int PPN) {
+    
+    }
+    int Simulator::insertIMEM(uint_32t_word VA) {
+        return -1;
+    }
+    int Simulator::insertDMEM(uint_32t_word VA) {
+        return -1;
+    }
+    void Simulator::queryICACHE(uint_32t_word VA, int PPN) {
+    
+    }
+    void Simulator::queryDCACHE(uint_32t_word VA, int PPN) {
+    
+    }
+    void Simulator::write(uint_32t_word VA, int mode) {
+        if (mode == 0) {
+            // Do nothing
+            // Nobody can write I part
+        } else {
+            read(VA, mode);
+        }
+    }
+
     uint_32t_word Simulator::fetch() {
         uint_32t_word opcode;
         bool hasError = false;
