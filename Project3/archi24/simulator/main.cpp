@@ -3,8 +3,9 @@
 
 int main(int argc, char *argv[])
 {
+    Simulator::Simulator *simulator;
     if (argc > 2) {
-        printf("Start simulator - default mode\n");
+        printf("Start simulator - custom mode\n");
         int args[10];
         for (int i = 1; i <= 10; i++) {
             int idx = 0;
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
                 idx++;
             }
         }
-        Simulator::Simulator *simulator = new Simulator::Simulator(
+        simulator = new Simulator::Simulator(
           args[0],
           args[1],
           args[2],
@@ -26,14 +27,13 @@ int main(int argc, char *argv[])
           args[8],
           args[9]);
         simulator->run();
-        delete simulator;
         printf("Finish simulator\n");
     } else {
-        printf("Start simulator - custom mode\n");
-        Simulator::Simulator *simulator = new Simulator::Simulator();
+        printf("Start simulator - default mode\n");
+        simulator = new Simulator::Simulator();
         simulator->run();
-        delete simulator;
         printf("Finish simulator\n");
     }
+    delete simulator;
     return 0;
 }

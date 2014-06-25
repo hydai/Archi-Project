@@ -4,7 +4,7 @@ This is project one for class computer architecture.
 
 Install & Run:
         Using 'make', there will be a executable file 
-        called 'single_cycle'.
+        called 'CMP'.
 
 Uninstall:
         Using 'make clean', it will clean up the files

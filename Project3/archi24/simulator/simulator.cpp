@@ -72,6 +72,7 @@ namespace Simulator {
     Simulator::~Simulator() {
         fclose(errordump);
         fclose(snapshot);
+        fclose(fptr_report);
     }
     void Simulator::init() {
         memset(imemory, 0, sizeof(imemory));

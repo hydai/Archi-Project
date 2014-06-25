@@ -5,7 +5,7 @@ SOURCE = main.cpp \
 		 execute.cpp RTypeExecution.cpp ITypeExecution.cpp JTypeExecution.cpp \
 		 decode.cpp
 CC = clang++
-CFLAGS = -Wall 
+CFLAGS = -Wall
 
 all::$(SIMULATOR)
 
