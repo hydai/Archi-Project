@@ -53,6 +53,40 @@ namespace Simulator {
         uint_32t_word rs, rt, rd;
         uint_32t_word ci, cs, ca;
     };
+    struct _PAGE {
+        int space[256];
+        int LRU;
+    };
+    struct _MEMORY {
+        int hits, misses;
+        int size, pageSize;
+        _PAGE page[256];
+    };
+    struct _BLOCK {
+        bool valid;
+        int tag, ind, off;
+        int LRU;
+    };
+    struct _CACHE {
+        int hits, misses;
+        int totalSize, blockSize, setAssociativity;
+        _BLOCK block[256][256];
+    };
+    struct _PPN {
+        bool valid;
+        int ppn;
+        int LRU;
+    }
+    struct _TLB {
+        int hits, misses;
+        int entry;
+        _PPN ppn[256];
+    };
+    struct _PTE {
+        int hits, misses;
+        int entry;
+        _PPN ppn[256];
+    };
     class Simulator {
         public:
             Simulator();
@@ -66,11 +100,17 @@ namespace Simulator {
             uint_32t_word pc;
             uint_32t_word cycleCounter;
             uint_32t_word runtimeStatus;
+            _MEMORY IMEM, DMEM;
+            _CACHE ICACHE, DCACHE;
+            _TLB ITLB, DTLB;
+            _PTE IPTE, DPTE;
             FILE *iimage, *dimage, *errordump, *snapshot, *fptr_report;
             void init();
             bool loadData();
             void loadIimage();
             void loadDimage();
+            void read(uint_32t_word);
+            void write(uint_32t_word);
             void dump();
             void report();
             uint_32t_word fetch();

@@ -13,11 +13,58 @@ namespace Simulator {
       int DCBSIZE,      // Block size of D cache
       int DCSA          // Set associativity of D cache
       ) {
-        // TODO;
+        this->init();
+        this->loadData();
+        // init for report units
+        memset(IMEM, 0, sizeof(IMEM));
+        memset(DMEM, 0, sizeof(DMEM));
+        memset(ICACHE, 0, sizeof(ICACHE));
+        memset(DCACHE, 0, sizeof(DCACHE));
+        memset(ITLB, 0, sizeof(ITLB));
+        memset(DTLB, 0, sizeof(DTLB));
+        memset(IPTE, 0, sizeof(IPTE));
+        memset(DPTE, 0, sizeof(DPTE));
+        IMEM.size = IMSIZE;
+        IMEM.pageSize = IPGSIZE;
+        DMEM.size = DMSIZE;
+        DMEM.pageSize = DPGSIZE;
+        ICACHE.totalSize = ICTSIZE;
+        ICACHE.blockSize = ICBSIZE;
+        ICACHE.setAssociativity = ICSA;
+        DCACHE.totalSize = DCTSIZE;
+        DCACHE.blockSize = DCBSIZE;
+        DCACHE.setAssociativity = DCSA;
+        IPTE.entry = 1024/IMEM.pageSize;
+        DPTE.entry = 1024/DMEM.pageSize;
+        ITLB.entry = IPTE.entry/4;
+        DTLB.entry = DPTE.entry/4;
     }
     Simulator::Simulator() {
         this->init();
         this->loadData();
+        // init for report units
+        memset(IMEM, 0, sizeof(IMEM));
+        memset(DMEM, 0, sizeof(DMEM));
+        memset(ICACHE, 0, sizeof(ICACHE));
+        memset(DCACHE, 0, sizeof(DCACHE));
+        memset(ITLB, 0, sizeof(ITLB));
+        memset(DTLB, 0, sizeof(DTLB));
+        memset(IPTE, 0, sizeof(IPTE));
+        memset(DPTE, 0, sizeof(DPTE));
+        IMEM.size = 64;
+        IMEM.pageSize = 8;
+        DMEM.size = 32;
+        DMEM.pageSize = 16;
+        ICACHE.totalSize = 16;
+        ICACHE.blockSize = 4;
+        ICACHE.setAssociativity = 4;
+        DCACHE.totalSize = 16;
+        DCACHE.blockSize = 4;
+        DCACHE.setAssociativity = 1;
+        IPTE.entry = 1024/IMEM.pageSize;
+        DPTE.entry = 1024/DMEM.pageSize;
+        ITLB.entry = IPTE.entry/4;
+        DTLB.entry = DPTE.entry/4;
     }
     Simulator::~Simulator() {
         fclose(errordump);
