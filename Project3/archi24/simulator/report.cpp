@@ -211,6 +211,16 @@ namespace Simulator {
                     PPN = i;
                 }
             }
+            for (int i = 0; i < ITLB.entry; i++) {
+                if (ITLB.ppn[i].ppn == PPN) {
+                    ITLB.ppn[i].valid = false;
+                }
+            }
+            for (int i = 0; i < IPTE.entry; i++) {
+                if (IPTE.ppn[i].ppn == PPN) {
+                    IPTE.ppn[i].valid = false;
+                }
+            }
             IMEM.page[PPN].valid = true;
             for (int i = 0; i < IMEM.pageSize/4; i++) {
                 IMEM.page[PPN].space[i] = VA+i*4;
@@ -238,6 +248,16 @@ namespace Simulator {
                 if (DMEM.page[i].LRU < LLRU) {
                     LLRU = DMEM.page[i].LRU;
                     PPN = i;
+                }
+            }
+            for (int i = 0; i < DTLB.entry; i++) {
+                if (DTLB.ppn[i].ppn == PPN) {
+                    DTLB.ppn[i].valid = false;
+                }
+            }
+            for (int i = 0; i < DPTE.entry; i++) {
+                if (DPTE.ppn[i].ppn == PPN) {
+                    DPTE.ppn[i].valid = false;
                 }
             }
             DMEM.page[PPN].valid = true;
