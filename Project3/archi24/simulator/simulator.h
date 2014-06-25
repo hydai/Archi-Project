@@ -76,7 +76,7 @@ namespace Simulator {
         bool valid;
         int ppn;
         int LRU;
-    }
+    };
     struct _TLB {
         int hits, misses;
         int entry;

@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include <cstring>
 
 namespace Simulator {
     Simulator::Simulator(
@@ -16,14 +17,14 @@ namespace Simulator {
         this->init();
         this->loadData();
         // init for report units
-        memset(IMEM, 0, sizeof(IMEM));
-        memset(DMEM, 0, sizeof(DMEM));
-        memset(ICACHE, 0, sizeof(ICACHE));
-        memset(DCACHE, 0, sizeof(DCACHE));
-        memset(ITLB, 0, sizeof(ITLB));
-        memset(DTLB, 0, sizeof(DTLB));
-        memset(IPTE, 0, sizeof(IPTE));
-        memset(DPTE, 0, sizeof(DPTE));
+        memset(IMEM.page, 0, sizeof(IMEM.page));
+        memset(DMEM.page, 0, sizeof(DMEM.page));
+        memset(ICACHE.block, 0, sizeof(ICACHE.block));
+        memset(DCACHE.block, 0, sizeof(DCACHE.block));
+        memset(ITLB.ppn, 0, sizeof(ITLB.ppn));
+        memset(DTLB.ppn, 0, sizeof(DTLB.ppn));
+        memset(IPTE.ppn, 0, sizeof(IPTE.ppn));
+        memset(DPTE.ppn, 0, sizeof(DPTE.ppn));
         IMEM.size = IMSIZE;
         IMEM.pageSize = IPGSIZE;
         DMEM.size = DMSIZE;
@@ -43,14 +44,14 @@ namespace Simulator {
         this->init();
         this->loadData();
         // init for report units
-        memset(IMEM, 0, sizeof(IMEM));
-        memset(DMEM, 0, sizeof(DMEM));
-        memset(ICACHE, 0, sizeof(ICACHE));
-        memset(DCACHE, 0, sizeof(DCACHE));
-        memset(ITLB, 0, sizeof(ITLB));
-        memset(DTLB, 0, sizeof(DTLB));
-        memset(IPTE, 0, sizeof(IPTE));
-        memset(DPTE, 0, sizeof(DPTE));
+        memset(IMEM.page, 0, sizeof(IMEM.page));
+        memset(DMEM.page, 0, sizeof(DMEM.page));
+        memset(ICACHE.block, 0, sizeof(ICACHE.block));
+        memset(DCACHE.block, 0, sizeof(DCACHE.block));
+        memset(ITLB.ppn, 0, sizeof(ITLB.ppn));
+        memset(DTLB.ppn, 0, sizeof(DTLB.ppn));
+        memset(IPTE.ppn, 0, sizeof(IPTE.ppn));
+        memset(DPTE.ppn, 0, sizeof(DPTE.ppn));
         IMEM.size = 64;
         IMEM.pageSize = 8;
         DMEM.size = 32;
@@ -129,11 +130,11 @@ namespace Simulator {
     }
     void Simulator::report() {
         fprintf( fptr_report, "ICache :\n");
-        fprintf( fptr_report, "# hits: %u\n", ICache.hits );
-        fprintf( fptr_report, "# misses: %u\n\n", ICache.misses );
+        fprintf( fptr_report, "# hits: %u\n", ICACHE.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", ICACHE.misses );
         fprintf( fptr_report, "DCache :\n");
-        fprintf( fptr_report, "# hits: %u\n", DCache.hits );
-        fprintf( fptr_report, "# misses: %u\n\n", DCache.misses );
+        fprintf( fptr_report, "# hits: %u\n", DCACHE.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", DCACHE.misses );
         fprintf( fptr_report, "ITLB :\n");
         fprintf( fptr_report, "# hits: %u\n", ITLB.hits );
         fprintf( fptr_report, "# misses: %u\n\n", ITLB.misses );
@@ -141,11 +142,11 @@ namespace Simulator {
         fprintf( fptr_report, "# hits: %u\n", DTLB.hits );
         fprintf( fptr_report, "# misses: %u\n\n", DTLB.misses );
         fprintf( fptr_report, "IPageTable :\n");
-        fprintf( fptr_report, "# hits: %u\n", IPageTable.hits );
-        fprintf( fptr_report, "# misses: %u\n\n", IPageTable.misses );
+        fprintf( fptr_report, "# hits: %u\n", IPTE.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", IPTE.misses );
         fprintf( fptr_report, "DPageTable :\n");
-        fprintf( fptr_report, "# hits: %u\n", DPageTable.hits );
-        fprintf( fptr_report, "# misses: %u\n\n", DPageTable.misses );
+        fprintf( fptr_report, "# hits: %u\n", DPTE.hits );
+        fprintf( fptr_report, "# misses: %u\n\n", DPTE.misses );
     }
     void Simulator::run() {
         while (true) {
@@ -167,6 +168,7 @@ namespace Simulator {
             }
             runtimeStatus = STATUS_NORMAL;
         }
+        this->report();
     }
     uint_32t_word Simulator::fetch() {
         uint_32t_word opcode;

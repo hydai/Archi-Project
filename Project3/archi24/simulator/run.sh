@@ -7,4 +7,5 @@ do
     cp ../../open_testcase/example${i}/*.bin ./
     ./CMP
     diff ../../open_testcase/example${i}/snapshot.rpt snapshot.rpt
+    diff ../../open_testcase/example${i}/report.rpt report.rpt
 done
