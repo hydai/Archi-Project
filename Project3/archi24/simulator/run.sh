@@ -6,6 +6,6 @@ do
     make
     cp ../../open_testcase/example${i}/*.bin ./
     ./CMP
-    diff ../../open_testcase/example${i}/snapshot.rpt snapshot.rpt
-    diff ../../open_testcase/example${i}/report.rpt report.rpt
+    vimdiff ../../open_testcase/example${i}/snapshot.rpt snapshot.rpt +"TOhtml" +"x snapshot${i}.html" +"qa"
+    vimdiff ../../open_testcase/example${i}/report.rpt report.rpt +"TOhtml" +"x report${i}.html" +"qa"
 done

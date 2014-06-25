@@ -67,6 +67,7 @@ namespace Simulator {
         bool valid;
         int tag, ind, off;
         int LRU;
+        uint_32t_word space;
     };
     struct _CACHE {
         int hits, misses;
@@ -126,6 +127,12 @@ namespace Simulator {
             void queryICACHE(uint_32t_word, int);
             void queryDCACHE(uint_32t_word, int);
             uint_32t_word getVPN(uint_32t_word, int);
+            int getOffsetBits(int);
+            int getBlockOffsetBits(int);
+            int getIndexOffsetBits(int);
+            uint_32t_word getPA(uint_32t_word, int, int);
+            uint_32t_word getTag(uint_32t_word, int);
+            uint_32t_word getInd(uint_32t_word, int);
 
             int LRUct;
             void dump();
